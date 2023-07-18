@@ -1,6 +1,6 @@
-import avalanche
+import torch
 from torchvision import transforms
-from vit_gdumb import ViTGDumb
+from vit_strategies import ViTGDumb
 from avalanche.benchmarks import SplitCIFAR100
 from torch.optim import SGD
 from torch.nn import CrossEntropyLoss
@@ -42,19 +42,23 @@ model = create_model(
     num_classes=100,
 )
 
+# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = "cpu"
+
 for name, param in model.named_parameters():
     if name.startswith(tuple(["blocks", "patch_embed", "cls_token", "norm", "pos_embed"])):
         param.requires_grad = False
+
 
 strategy = ViTGDumb(
     model = model,
     optimizer=SGD(model.parameters(), lr=0.1, momentum=0.99),
     criterion=CrossEntropyLoss(),
-    mem_size=200,
+    mem_size=5000,
     train_epochs=2,
     train_mb_size=8,
     eval_mb_size=2,
-    device="cpu"
+    device=device,
 )
 
 
