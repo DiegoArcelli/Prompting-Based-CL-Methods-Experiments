@@ -1,11 +1,10 @@
-from torch.nn import Sequential, Linear, ReLU, Softmax
+import torch
 from torchvision import transforms
 from avalanche.benchmarks import SplitCIFAR100
 from torch.optim import SGD
 from torch.nn import CrossEntropyLoss
 from avalanche.models.vit import create_model
-from avalanche.training.supervised import LearningToPrompt
-
+from vit_strategies import KNNLearning2Prompt
 
 train_transform = transforms.Compose(
     [
@@ -37,14 +36,15 @@ benchmark = SplitCIFAR100(
     eval_transform=eval_transform
 )
 
-trategy = LearningToPrompt(
-            model_name='vit_base_patch16_224',#"simpleMLP",
+strategy = KNNLearning2Prompt(
+            model=None,
+            model_name='vit_tiny_patch16_224',#"simpleMLP",
             criterion=CrossEntropyLoss(),
-            train_mb_size=64,
+            train_mb_size=8,
             device=device,
             train_epochs=2,
-            num_classes=10,
-            eval_mb_size=64,
+            num_classes=100,
+            eval_mb_size=8,
             prompt_pool=True,
             pool_size=10,
             prompt_length=5,
@@ -63,3 +63,10 @@ trategy = LearningToPrompt(
             lr = 0.03,
             sim_coefficient = 0.5
         )
+
+results = []
+for experience in benchmark.train_stream:
+    print("Start of experience: ", experience.current_experience)
+    print("Current Classes: ", experience.classes_in_this_experience)
+    strategy.train(experience)
+    results.append(strategy.eval(benchmark.test_stream))
