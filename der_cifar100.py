@@ -43,6 +43,10 @@ model = create_model(
     img_size=224,
     in_chans=3,
     num_classes=100,
+    # prompt__pool=True,
+    # pool_size=10,
+    # prompt_length=5,
+    # top_k=5
 )
 
 for name, param in model.named_parameters():
