@@ -272,8 +272,9 @@ class KNNLearning2Prompt(LearningToPrompt):
     
 
     def _after_training(self, **kwargs):
-        torch.save(self.model, f"./checkpoints/l2p_cifar_100_trained.pt")
+        torch.save(self.model, "./checkpoints/l2p_cifar_100_trained.pt")
         return super()._after_training(**kwargs)
+    
     
     def key_class_mapping(self):
         key_class_map = {x: None for x in range(self.model.prompt.top_k)}
