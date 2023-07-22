@@ -8,10 +8,10 @@ transform = transforms.Compose([
     transforms.PILToTensor()
 ])
 
-model = torch.load("./checkpoints/l2p_cifar_100_trained.pt")
+model = torch.load("./../checkpoints/l2p_cifar_100_trained.pt")
 model.eval()
 
-dataset = CIFAR100("./data/", train=False, download=True)
+dataset = CIFAR100("./../data/", train=False, download=True)
 
 batch_size = 8
 

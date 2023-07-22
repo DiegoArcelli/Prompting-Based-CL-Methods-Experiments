@@ -4,7 +4,7 @@ from utils import *
 def print_top_k_classes(preds, k):
     return sorted(preds.items(), key=lambda x: x[1])[::-1][:k]
 
-model = torch.load("./checkpoints/l2p_cifar_100_trained.pt")
+model = torch.load("./../checkpoints/l2p_cifar_100_trained.pt")
 model.eval()
 
 pool_size = model.prompt.pool_size

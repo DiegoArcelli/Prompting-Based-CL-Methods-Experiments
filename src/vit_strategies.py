@@ -313,7 +313,7 @@ class KNNLearningToPrompt(LearningToPrompt):
     
 
     def _after_training(self, **kwargs):
-        torch.save(self.model, "./checkpoints/l2p_cifar_100_trained.pt")
+        torch.save(self.model, "./../checkpoints/l2p_cifar_100_trained.pt")
         return super()._after_training(**kwargs)
     
     

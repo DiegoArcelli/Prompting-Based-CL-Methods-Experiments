@@ -70,4 +70,4 @@ for experience in benchmark.train_stream:
     strategy.train(experience)
     results.append(strategy.eval(benchmark.test_stream))
 
-torch.save(strategy.model, f"checkpoints/l2p_cifar100_trained_model.pt")
+torch.save(strategy.model, f"./../checkpoints/l2p_cifar100_trained_model.pt")
