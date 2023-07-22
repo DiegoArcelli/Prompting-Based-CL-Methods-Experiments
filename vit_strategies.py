@@ -2,18 +2,59 @@ from avalanche.core import SupervisedPlugin
 from avalanche.training.plugins.strategy_plugin import SupervisedPlugin
 import torch
 from torch import nn
-from avalanche.training.supervised import GDumb, DER, LearningToPrompt
+from avalanche.training.supervised import GDumb, DER, LearningToPrompt, ER_ACE
+from avalanche.training.templates import SupervisedTemplate
 from torch.nn import CrossEntropyLoss, Module
 from torch.optim import Optimizer
 from typing import Callable, Optional, Sequence, List, Union
 from avalanche.training.plugins import SupervisedPlugin, EvaluationPlugin
 from avalanche.training.plugins.evaluation import EvaluationPlugin, default_evaluator
 from avalanche.models.vit import create_model
-from avalanche.training.templates import SupervisedTemplate
 from avalanche.models import Prompt
 import numpy as np
 from functools import reduce
 import torch.nn.functional as F
+
+class ViTER_ACE(ER_ACE):
+
+    def __init__(
+        self,
+        model: Module,
+        optimizer: Optimizer,
+        criterion=CrossEntropyLoss(),
+        mem_size: int = 200,
+        batch_size_mem: int = 10,
+        train_mb_size: int = 1,
+        train_epochs: int = 1,
+        eval_mb_size: Optional[int] = 1,
+        device: Union[str, torch.device] = "cpu",
+        plugins: Optional[List[SupervisedPlugin]] = None,
+        evaluator: Union[
+            EvaluationPlugin, Callable[[], EvaluationPlugin]
+        ] = default_evaluator,
+        eval_every=-1,
+        peval_mode="epoch",
+    ):
+        super().__init__(
+            model,
+            optimizer,
+            criterion,
+            mem_size,
+            batch_size_mem,
+            train_mb_size,
+            train_epochs,
+            eval_mb_size,
+            device,
+            plugins,
+            evaluator,
+            eval_every,
+            peval_mode
+        )
+
+    def forward(self):
+        return self.model(self.mb_x)["logits"]
+    
+
 
 class ViTGDumb(GDumb):
 
@@ -99,7 +140,7 @@ class ViTDER(DER):
         return self.model(self.mb_x)["logits"]
     
 
-class KNNLearning2Prompt(LearningToPrompt):
+class KNNLearningToPrompt(LearningToPrompt):
 
     def __init__(
         self,

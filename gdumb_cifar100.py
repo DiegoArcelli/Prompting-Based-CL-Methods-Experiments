@@ -36,7 +36,7 @@ benchmark = SplitCIFAR100(
 )
 
 model = create_model(
-    model_name="vit_tiny_patch16_224",
+    model_name="vit_base_patch16_224",
     img_size=224,
     in_chans=3,
     num_classes=100,
@@ -54,8 +54,8 @@ strategy = ViTGDumb(
     model = model,
     optimizer=SGD(model.parameters(), lr=0.1, momentum=0.99),
     criterion=CrossEntropyLoss(),
-    mem_size=5000,
-    train_epochs=2,
+    mem_size=100,
+    train_epochs=1,
     train_mb_size=8,
     eval_mb_size=2,
     device=device,

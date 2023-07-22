@@ -4,7 +4,7 @@ from avalanche.benchmarks import SplitCIFAR100
 from torch.optim import SGD
 from torch.nn import CrossEntropyLoss
 from avalanche.models.vit import create_model
-from vit_strategies import KNNLearning2Prompt
+from avalanche.training.supervised import LearningToPrompt
 
 train_transform = transforms.Compose(
     [
@@ -36,9 +36,8 @@ benchmark = SplitCIFAR100(
     eval_transform=eval_transform
 )
 
-strategy = KNNLearning2Prompt(
-            model=None,
-            model_name='vit_tiny_patch16_224',#"simpleMLP",
+strategy = LearningToPrompt(
+            model_name='vit_base_patch16_224',#"simpleMLP",
             criterion=CrossEntropyLoss(),
             train_mb_size=8,
             device=device,
@@ -70,3 +69,5 @@ for experience in benchmark.train_stream:
     print("Current Classes: ", experience.classes_in_this_experience)
     strategy.train(experience)
     results.append(strategy.eval(benchmark.test_stream))
+
+torch.save(strategy.model, f"checkpoints/l2p_cifar100_trained_model.pt")
