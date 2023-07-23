@@ -39,8 +39,8 @@ eval_transform = transforms.Compose(
     ]
 )
 
-train_dataset = torchvision.datasets.CIFAR100(root='./data', train=True, download=True, transform=train_transform)
-test_dataset = torchvision.datasets.CIFAR100(root='./data', train=False, download=True, transform=eval_transform)
+train_dataset = torchvision.datasets.CIFAR100(root='./../../data', train=True, download=True, transform=train_transform)
+test_dataset = torchvision.datasets.CIFAR100(root='./../../data', train=False, download=True, transform=eval_transform)
 
 
 val_size = int(len(train_dataset)*validation_ratio)

@@ -31,5 +31,8 @@ def prompt_forward(model, x, prompt_id):
     return res
 
 
-def select_classes(dataset, class_id):
-    pass
+def count_parameters(model):
+    n_params_trainable =  sum(p.numel() for p in model.parameters() if p.requires_grad)
+    n_params = sum(p.numel() for p in model.parameters())
+    print(f'The model has {n_params} total parameters')
+    print(f'The model has {n_params_trainable} trainable parameters')

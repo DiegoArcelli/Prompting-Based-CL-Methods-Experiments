@@ -27,8 +27,8 @@ eval_transform = transforms.Compose(
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # device = "cpu"
 
-num_classes = 10
-benchmark = SplitCIFAR10(
+num_classes = 100
+benchmark = SplitCIFAR100(
     n_experiences= 5 if num_classes == 10 else 10,
     seed=42,
     fixed_class_order=[c for c in range(num_classes)],

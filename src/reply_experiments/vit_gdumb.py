@@ -2,19 +2,19 @@ from avalanche.core import SupervisedPlugin
 from avalanche.training.plugins.strategy_plugin import SupervisedPlugin
 import torch
 from torch import nn
-from avalanche.training.supervised import GDumb, DER, LearningToPrompt, ER_ACE
-from avalanche.training.templates import SupervisedTemplate
-from torch.nn import CrossEntropyLoss, Module
-from torch.optim import Optimizer
-from typing import Callable, Optional, Sequence, List, Union
+from avalanche.training.supervised import GDumb
+from torch.nn import CrossEntropyLoss
 from avalanche.training.plugins import SupervisedPlugin, EvaluationPlugin
 from avalanche.training.plugins.evaluation import EvaluationPlugin, default_evaluator
 from avalanche.models.vit import create_model
-from avalanche.models import Prompt
 import numpy as np
-from functools import reduce
-import torch.nn.functional as F
-    
+
+from typing import (
+    Callable,
+    Optional,
+    List,
+    Union
+)
 
 
 class ViTGDumb(GDumb):
@@ -22,7 +22,7 @@ class ViTGDumb(GDumb):
     def __init__(
         self,
         model_name: str,
-        criterion,
+        criterion=CrossEntropyLoss(),
         mem_size: int = 200,
         train_mb_size: int = 1,
         train_epochs: int = 1,
@@ -52,7 +52,7 @@ class ViTGDumb(GDumb):
         use_prompt_mask: bool = False,
         train_prompt_mask: bool = False,
         use_cls_features: bool = True,
-        use_mask: bool = True,
+        use_mask: bool = False,
         use_vit: bool = True,
         **base_kwargs
     ):
@@ -167,90 +167,3 @@ class ViTGDumb(GDumb):
             logits = logits.index_fill(dim=1, index=not_mask, value=float("-inf"))
 
         return logits
-
-
-
-
-class ViTER_ACE(ER_ACE):
-
-    def __init__(
-        self,
-        model: Module,
-        optimizer: Optimizer,
-        criterion=CrossEntropyLoss(),
-        mem_size: int = 200,
-        batch_size_mem: int = 10,
-        train_mb_size: int = 1,
-        train_epochs: int = 1,
-        eval_mb_size: Optional[int] = 1,
-        device: Union[str, torch.device] = "cpu",
-        plugins: Optional[List[SupervisedPlugin]] = None,
-        evaluator: Union[
-            EvaluationPlugin, Callable[[], EvaluationPlugin]
-        ] = default_evaluator,
-        eval_every=-1,
-        peval_mode="epoch",
-    ):
-        super().__init__(
-            model,
-            optimizer,
-            criterion,
-            mem_size,
-            batch_size_mem,
-            train_mb_size,
-            train_epochs,
-            eval_mb_size,
-            device,
-            plugins,
-            evaluator,
-            eval_every,
-            peval_mode
-        )
-
-    def forward(self):
-        return self.model(self.mb_x)["logits"]
-
-
-class ViTDER(DER):
-
-    def __init__(
-        self,
-        model: Module,
-        optimizer: Optimizer,
-        criterion=CrossEntropyLoss(),
-        mem_size: int = 200,
-        batch_size_mem: Optional[int] = None,
-        alpha: float = 0.1,
-        beta: float = 0.5,
-        train_mb_size: int = 1,
-        train_epochs: int = 1,
-        eval_mb_size: Optional[int] = 1,
-        device: Union[str, torch.device] = "cpu",
-        plugins: Optional[List[SupervisedPlugin]] = None,
-        evaluator: Union[
-            EvaluationPlugin, Callable[[], EvaluationPlugin]
-        ] = default_evaluator,
-        eval_every=-1,
-        peval_mode="epoch"
-    ):
-        
-        super().__init__(
-            model,
-            optimizer,
-            criterion,
-            mem_size,
-            batch_size_mem,
-            alpha,
-            beta,
-            train_mb_size,
-            train_epochs,
-            eval_mb_size,
-            device,
-            plugins,
-            evaluator,
-            eval_every,
-            peval_mode
-        )
-
-    def forward(self):
-        return self.model(self.mb_x)["logits"]
