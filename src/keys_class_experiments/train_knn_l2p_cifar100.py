@@ -1,6 +1,6 @@
 import torch
 from torchvision import transforms
-from avalanche.benchmarks import SplitCIFAR100
+from avalanche.benchmarks import SplitCIFAR100, SplitCIFAR10
 from torch.optim import SGD
 from torch.nn import CrossEntropyLoss
 from avalanche.models.vit import create_model
@@ -24,13 +24,14 @@ eval_transform = transforms.Compose(
     ]
 )
 
-# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-device = "cpu"
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+# device = "cpu"
 
-benchmark = SplitCIFAR100(
-    n_experiences=10,
+num_classes = 10
+benchmark = SplitCIFAR10(
+    n_experiences= 5 if num_classes == 10 else 10,
     seed=42,
-    fixed_class_order=[c for c in range(100)],
+    fixed_class_order=[c for c in range(num_classes)],
     return_task_id=False,
     train_transform=train_transform,
     eval_transform=eval_transform
@@ -42,8 +43,8 @@ strategy = KNNLearningToPrompt(
             criterion=CrossEntropyLoss(),
             train_mb_size=8,
             device=device,
-            train_epochs=2,
-            num_classes=100,
+            train_epochs=1,
+            num_classes=num_classes,
             eval_mb_size=8,
             prompt_pool=True,
             pool_size=10,
@@ -61,17 +62,22 @@ strategy = KNNLearningToPrompt(
             use_mask=True,
             use_vit=True,
             lr = 0.03,
-            sim_coefficient = 0.5
+            sim_coefficient = 0.5,
+            k=3
         )
+
 
 results = []
 for experience in benchmark.train_stream:
     print("Start of experience: ", experience.current_experience)
     print("Current Classes: ", experience.classes_in_this_experience)
     strategy.train(experience)
-    results.append(strategy.eval(benchmark.test_stream))
+results.append(strategy.eval(benchmark.test_stream))
+
+strategy.switch_to_knn_mode()
 
 # compute key class mapping and use keys and knn classifier
+results = []
 for experience in benchmark.train_stream:
     strategy.train(experience)
 results.append(strategy.eval(benchmark.test_stream))

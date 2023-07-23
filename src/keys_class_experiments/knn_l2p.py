@@ -87,7 +87,6 @@ class KNNLearningToPrompt(LearningToPrompt):
                     p.requires_grad = False
 
             model.head = torch.nn.Linear(model.head.in_features, num_classes).to(device)
-            model.key_class_counts = {(k, c): 0 for k in range(model.prompt.pool_size) for c in range(num_classes)}
         else:
             model = torch.load(model_checkpoint)
 
@@ -119,6 +118,7 @@ class KNNLearningToPrompt(LearningToPrompt):
         self.train_prompt_mask = train_prompt_mask
         self.use_mask = use_mask
         self.use_vit = use_vit
+        self.knn_mode = knn_mode
 
         if use_cls_features:
             self.original_vit = create_model(
@@ -157,26 +157,8 @@ class KNNLearningToPrompt(LearningToPrompt):
 
         logits = self.res["logits"]
 
-
-        if self.knn_mode and self.is_training:
-            pred_classes = logits.argmax(dim=1)
-            for i in range(pred_classes.shape[0]):
-                pred_class = pred_classes[i].item()
-                for j in range(self.model.prompt.top_k):
-                    key_id = self.res["prompt_idx"][i][j].item()
-                    self.model.key_class_counts[(key_id, pred_class)] += 1
-            return logits
-        
-        if self.knn_mode and self.is_eval:
-            keys = self.model.prompt.l2_normalize(self.model.prompt.prompt_key, dim=1)
-            query = self.model.prompt.l2_normalize(cls_features, dim=1)
-            similarity = torch.matmul(query, keys.T)
-            _, idx = torch.topk(similarity, k=self.k, dim=1)
-            key_class_map = self.key_class_mapping()
-            idx.apply_(lambda x: key_class_map[x])
-            pred = idx.max(dim=1)[0]
-            one_hot_pred = F.one_hot(pred)
-            return one_hot_pred
+        if self.knn_mode:
+            return self.knn_forward(logits, cls_features)
 
         
         if self.use_mask and self.is_training:
@@ -188,16 +170,72 @@ class KNNLearningToPrompt(LearningToPrompt):
         return logits
     
 
-    def _after_training(self, **kwargs):
-        self.knn_mode = True
-        torch.save(self.model, "./../checkpoints/l2p_cifar_100_trained.pt")
-        return super()._after_training(**kwargs)
+
+    def knn_forward(self, logits, cls_features):
+
+        if self.knn_mode and self.is_training:
+
+            # compute clsses of the current batch
+            pred_classes = logits.argmax(dim=1) # (B, 1)
+
+            # iterate over each prediction
+            for i in range(pred_classes.shape[0]):
+                pred_class = pred_classes[i].item() # get the predicted class
+                # iterate over each prompt selected prompt for the i-th element of the batch
+                for j in range(self.model.prompt.top_k): 
+                    key_id = self.res["prompt_idx"][i][j].item() # get the j-th selected prompt of the i-th batch element
+                    # increase the key-class counter
+                    self.model.key_class_counts[(key_id, pred_class)] += 1
+            return logits
+
+        
+        if self.knn_mode and self.is_eval:
+            # normalize the selected keys
+            keys = self.model.prompt.l2_normalize(self.model.prompt.prompt_key, dim=1) # (N_K, D)
+
+            # normalize the query
+            query = self.model.prompt.l2_normalize(cls_features, dim=1) # (B, D)
+
+            # compute the cosine similarity between the queries and the keys
+            similarity = torch.matmul(query, keys.T) # (B, N_K)
+
+            # find the top k keys for each element of the batch
+            _, idx = torch.topk(similarity, k=self.k, dim=1) # (B, K)
+
+            # we map each one of the top k keys to its correspondent class
+            key_class_map = self.key_class_mapping()            
+            classes = idx.detach().cpu().apply_(lambda x: key_class_map[x]).to(self.device) # (B, K)
+
+            # compute the most present classes for each batch element
+            pred = classes.max(dim=1)[0] # (B)
+
+            # compute the one hot representation of each class in the batch
+            one_hot_pred = F.one_hot(pred, num_classes=self.num_classes) # (B, C)
+
+            return one_hot_pred.float()
+        
+
+    def switch_to_knn_mode(self):
+        if not self.knn_mode:
+            for _, p in self.model.named_parameters():
+                p.requires_grad = False
+            self.knn_mode = True
+            self.model.key_class_counts = {(k, c): 0 for k in range(self.model.prompt.pool_size) for c in range(self.model.num_classes)}
+        else:
+            torch.save(self.model, "./../checkpoints/knn_l2p_cifar_100_trained.pt")
     
-    
+
     def key_class_mapping(self):
-        key_class_map = {x: None for x in range(self.model.prompt.top_k)}
-        for i in range(self.model.prompt.top_k):
-            sub_dict = {c: v for (k,c), v in self.model.key_class_counts.item() if k == i}
+        # create a dict that maps a prompt key to its most predicted class
+        key_class_map = {x: None for x in range(self.model.prompt.pool_size)}
+        for i in range(self.model.prompt.pool_size):
+            # select the class count dictionary for the i-th key of the pool
+            sub_dict = {c: v for (k,c), v in self.model.key_class_counts.items() if k == i}
+            # find in the class count dict the most predicted class for that key
             pred_class, count = reduce(lambda a, x: x if x[1] > a[1] else a, sub_dict.items(), (0, 0))
-            key_class_map[0] = pred_class
+            key_class_map[i] = pred_class
         return key_class_map
+    
+    def backward(self):
+        if not self.knn_mode:
+            self.loss.backward(retain_graph=self.retain_graph)

@@ -1,3 +1,5 @@
+import sys
+sys.path.append("./../")
 import torch
 from utils import *
 from avalanche.benchmarks.datasets import CIFAR100
@@ -8,7 +10,7 @@ transform = transforms.Compose([
     transforms.PILToTensor()
 ])
 
-model = torch.load("./../checkpoints/l2p_cifar_100_trained.pt")
+model = torch.load("./../../checkpoints/l2p_cifar_100_trained.pt")
 model.eval()
 
 dataset = CIFAR100("./../data/", train=False, download=True)
