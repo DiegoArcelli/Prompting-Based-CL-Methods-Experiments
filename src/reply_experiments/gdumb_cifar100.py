@@ -1,10 +1,11 @@
 import torch
 from torchvision import transforms
+from reply_experiments.vit_strategies import ViTGDumb
 from avalanche.benchmarks import SplitCIFAR100
 from torch.optim import SGD
 from torch.nn import CrossEntropyLoss
 from avalanche.models.vit import create_model
-from vit_strategies import KNNLearningToPrompt
+
 
 train_transform = transforms.Compose(
     [
@@ -24,8 +25,6 @@ eval_transform = transforms.Compose(
     ]
 )
 
-# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-device = "cpu"
 
 benchmark = SplitCIFAR100(
     n_experiences=10,
@@ -36,33 +35,32 @@ benchmark = SplitCIFAR100(
     eval_transform=eval_transform
 )
 
-strategy = KNNLearningToPrompt(
-            model=None,
-            model_name='vit_tiny_patch16_224',#"simpleMLP",
-            criterion=CrossEntropyLoss(),
-            train_mb_size=8,
-            device=device,
-            train_epochs=2,
-            num_classes=100,
-            eval_mb_size=8,
-            prompt_pool=True,
-            pool_size=10,
-            prompt_length=5,
-            top_k=5,
-            prompt_key=True,
-            pretrained=True,
-            embedding_key="cls",
-            prompt_init="uniform",
-            batchwise_prompt=False,
-            head_type="token+prompt",
-            use_prompt_mask=False,
-            train_prompt_mask=False,
-            use_cls_features=True,
-            use_mask=True,
-            use_vit=True,
-            lr = 0.03,
-            sim_coefficient = 0.5
-        )
+# model = create_model(
+#     model_name="vit_base_patch16_224",
+#     img_size=224,
+#     in_chans=3,
+#     num_classes=100,
+# )
+
+# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = "cpu"
+
+# for name, param in model.named_parameters():
+#     if name.startswith(tuple(["blocks", "patch_embed", "cls_token", "norm", "pos_embed"])):
+#         param.requires_grad = False
+
+
+strategy = ViTGDumb(
+    model_name="vit_tiny_patch16_224",
+    # optimizer=SGD(model.parameters(), lr=0.1, momentum=0.99),
+    criterion=CrossEntropyLoss(),
+    mem_size=100,
+    train_epochs=1,
+    train_mb_size=8,
+    eval_mb_size=2,
+    device=device,
+)
+
 
 results = []
 for experience in benchmark.train_stream:

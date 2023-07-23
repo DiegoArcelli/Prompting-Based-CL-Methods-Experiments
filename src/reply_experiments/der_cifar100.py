@@ -4,7 +4,7 @@ from avalanche.benchmarks import SplitCIFAR100
 from torch.optim import SGD
 from torch.nn import CrossEntropyLoss
 from avalanche.models.vit import create_model
-from vit_strategies import ViTDER
+from reply_experiments.vit_strategies import ViTDER
 
 
 train_transform = transforms.Compose(

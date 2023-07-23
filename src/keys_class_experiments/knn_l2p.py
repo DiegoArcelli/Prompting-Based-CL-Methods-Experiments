@@ -2,142 +2,15 @@ from avalanche.core import SupervisedPlugin
 from avalanche.training.plugins.strategy_plugin import SupervisedPlugin
 import torch
 from torch import nn
-from avalanche.training.supervised import GDumb, DER, LearningToPrompt, ER_ACE
+from avalanche.training.supervised import LearningToPrompt
 from avalanche.training.templates import SupervisedTemplate
-from torch.nn import CrossEntropyLoss, Module
-from torch.optim import Optimizer
 from typing import Callable, Optional, Sequence, List, Union
 from avalanche.training.plugins import SupervisedPlugin, EvaluationPlugin
 from avalanche.training.plugins.evaluation import EvaluationPlugin, default_evaluator
 from avalanche.models.vit import create_model
-from avalanche.models import Prompt
 import numpy as np
 from functools import reduce
 import torch.nn.functional as F
-
-class ViTER_ACE(ER_ACE):
-
-    def __init__(
-        self,
-        model: Module,
-        optimizer: Optimizer,
-        criterion=CrossEntropyLoss(),
-        mem_size: int = 200,
-        batch_size_mem: int = 10,
-        train_mb_size: int = 1,
-        train_epochs: int = 1,
-        eval_mb_size: Optional[int] = 1,
-        device: Union[str, torch.device] = "cpu",
-        plugins: Optional[List[SupervisedPlugin]] = None,
-        evaluator: Union[
-            EvaluationPlugin, Callable[[], EvaluationPlugin]
-        ] = default_evaluator,
-        eval_every=-1,
-        peval_mode="epoch",
-    ):
-        super().__init__(
-            model,
-            optimizer,
-            criterion,
-            mem_size,
-            batch_size_mem,
-            train_mb_size,
-            train_epochs,
-            eval_mb_size,
-            device,
-            plugins,
-            evaluator,
-            eval_every,
-            peval_mode
-        )
-
-    def forward(self):
-        return self.model(self.mb_x)["logits"]
-    
-
-
-class ViTGDumb(GDumb):
-
-    def __init__(
-        self,
-        model: Module,
-        optimizer: Optimizer,
-        criterion,
-        mem_size: int = 200,
-        train_mb_size: int = 1,
-        train_epochs: int = 1,
-        eval_mb_size: Optional[int] = None,
-        device: Union[str, torch.device] = "cpu",
-        plugins: Optional[List[SupervisedPlugin]] = None,
-        evaluator: Union[
-            EvaluationPlugin, Callable[[], EvaluationPlugin]
-        ] = default_evaluator,
-        eval_every=-1,
-        **base_kwargs
-    ):
-        
-        super().__init__(
-            model,
-            optimizer,
-            criterion,
-            mem_size,
-            train_mb_size=train_mb_size,
-            train_epochs=train_epochs,
-            eval_mb_size=eval_mb_size,
-            device=device,
-            plugins=plugins,
-            evaluator=evaluator,
-            eval_every=eval_every,
-            **base_kwargs
-        )
-
-    def forward(self):
-        return self.model(self.mb_x)["logits"]
-    
-
-class ViTDER(DER):
-
-    def __init__(
-        self,
-        model: Module,
-        optimizer: Optimizer,
-        criterion=CrossEntropyLoss(),
-        mem_size: int = 200,
-        batch_size_mem: Optional[int] = None,
-        alpha: float = 0.1,
-        beta: float = 0.5,
-        train_mb_size: int = 1,
-        train_epochs: int = 1,
-        eval_mb_size: Optional[int] = 1,
-        device: Union[str, torch.device] = "cpu",
-        plugins: Optional[List[SupervisedPlugin]] = None,
-        evaluator: Union[
-            EvaluationPlugin, Callable[[], EvaluationPlugin]
-        ] = default_evaluator,
-        eval_every=-1,
-        peval_mode="epoch"
-    ):
-        
-        super().__init__(
-            model,
-            optimizer,
-            criterion,
-            mem_size,
-            batch_size_mem,
-            alpha,
-            beta,
-            train_mb_size,
-            train_epochs,
-            eval_mb_size,
-            device,
-            plugins,
-            evaluator,
-            eval_every,
-            peval_mode
-        )
-
-    def forward(self):
-        return self.model(self.mb_x)["logits"]
     
 
 class KNNLearningToPrompt(LearningToPrompt):
@@ -178,6 +51,7 @@ class KNNLearningToPrompt(LearningToPrompt):
         use_cls_features: bool = True,
         use_mask: bool = True,
         use_vit: bool = True,
+        knn_mode: bool = False,
         **kwargs,
     ):
         
@@ -283,15 +157,17 @@ class KNNLearningToPrompt(LearningToPrompt):
 
         logits = self.res["logits"]
 
-        if self.is_training:
+
+        if self.knn_mode and self.is_training:
             pred_classes = logits.argmax(dim=1)
             for i in range(pred_classes.shape[0]):
                 pred_class = pred_classes[i].item()
                 for j in range(self.model.prompt.top_k):
                     key_id = self.res["prompt_idx"][i][j].item()
                     self.model.key_class_counts[(key_id, pred_class)] += 1
-
-        if self.is_eval and self.use_vit:
+            return logits
+        
+        if self.knn_mode and self.is_eval:
             keys = self.model.prompt.l2_normalize(self.model.prompt.prompt_key, dim=1)
             query = self.model.prompt.l2_normalize(cls_features, dim=1)
             similarity = torch.matmul(query, keys.T)
@@ -313,6 +189,7 @@ class KNNLearningToPrompt(LearningToPrompt):
     
 
     def _after_training(self, **kwargs):
+        self.knn_mode = True
         torch.save(self.model, "./../checkpoints/l2p_cifar_100_trained.pt")
         return super()._after_training(**kwargs)
     
