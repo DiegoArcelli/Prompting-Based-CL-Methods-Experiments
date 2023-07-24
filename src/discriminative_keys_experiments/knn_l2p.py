@@ -17,7 +17,7 @@ class KNNLearningToPrompt(LearningToPrompt):
 
     def __init__(
         self,
-        model_checkpoint : str = None,
+        model : str = None,
         model_name : str = "vit_base_patch16_224",
         criterion: nn.Module = nn.CrossEntropyLoss(),
         train_mb_size: int = 1,
@@ -63,7 +63,7 @@ class KNNLearningToPrompt(LearningToPrompt):
         self.sim_coefficient = sim_coefficient
         self.k = k
 
-        if model_checkpoint is None:
+        if model is None:
             model = create_model(
                 model_name=model_name,
                 prompt_pool=prompt_pool,
@@ -87,8 +87,6 @@ class KNNLearningToPrompt(LearningToPrompt):
                     p.requires_grad = False
 
             model.head = torch.nn.Linear(model.head.in_features, num_classes).to(device)
-        else:
-            model = torch.load(model_checkpoint)
 
         self.model = model
                 

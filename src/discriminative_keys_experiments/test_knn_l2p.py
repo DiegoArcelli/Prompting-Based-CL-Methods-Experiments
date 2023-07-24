@@ -49,11 +49,11 @@ else:
     )
 
 
-model = torch.load("./../../checkpoints/knn_l2p_cifar100.py")
+model = torch.load("./../../checkpoints/knn_l2p_cifar100.pt")
 
 strategy = KNNLearningToPrompt(
             model=model,
-            # model_name='vit_tiny_patch16_224',#"simpleMLP",
+            model_name='vit_tiny_patch16_224',#"simpleMLP",
             criterion=CrossEntropyLoss(),
             train_mb_size=8,
             device=device,
@@ -80,10 +80,12 @@ strategy = KNNLearningToPrompt(
             k=3
         )
 
+
 strategy.switch_to_knn_mode()
 
 # compute key class mapping and use keys and knn classifier
 results = []
 for experience in benchmark.train_stream:
     strategy.train(experience)
+
 results.append(strategy.eval(benchmark.test_stream))

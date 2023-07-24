@@ -1,9 +1,7 @@
 import torch
 from torchvision import transforms
 from avalanche.benchmarks import SplitCIFAR100, SplitCIFAR10
-from torch.optim import SGD
 from torch.nn import CrossEntropyLoss
-from avalanche.models.vit import create_model
 from knn_l2p import KNNLearningToPrompt
 
 train_transform = transforms.Compose(
@@ -27,7 +25,7 @@ eval_transform = transforms.Compose(
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # device = "cpu"
 
-num_classes = 100
+num_classes = 10
 
 if num_classes == 10:
     benchmark = SplitCIFAR10(
@@ -84,12 +82,6 @@ for experience in benchmark.train_stream:
     print("Start of experience: ", experience.current_experience)
     print("Current Classes: ", experience.classes_in_this_experience)
     strategy.train(experience)
-results.append(strategy.eval(benchmark.test_stream))
+    results.append(strategy.eval(benchmark.test_stream))
 
-strategy.switch_to_knn_mode()
-
-# compute key class mapping and use keys and knn classifier
-results = []
-for experience in benchmark.train_stream:
-    strategy.train(experience)
-results.append(strategy.eval(benchmark.test_stream))
+torch.save(strategy.model, "./../../checkpoints/knn_l2p_cifar100.pt")
