@@ -53,17 +53,20 @@ else:
 strategy = ViTDER(
     model_name="vit_tiny_patch16_224",
     criterion=CrossEntropyLoss(),
-    mem_size=100,
+    mem_size=1000,
     train_epochs=1,
     train_mb_size=8,
     eval_mb_size=2,
     device=device,
-    prompt_pool=False,
+    prompt_pool=True,
     use_cls_features=False,
     prompt_selection=False,
-    head_type="token",
+    head_type="token+prompt",
     num_classes=num_classes,
-    use_mask=False
+    pool_size=10,
+    prompt_length=5,
+    top_k=10,
+    sim_coefficient=0
 )
 
 count_parameters(strategy.model)

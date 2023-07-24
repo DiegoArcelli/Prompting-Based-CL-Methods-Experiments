@@ -89,5 +89,3 @@ for experience in benchmark.train_stream:
     print("Current Classes: ", experience.classes_in_this_experience)
     strategy.train(experience)
     results.append(strategy.eval(benchmark.test_stream))
-
-torch.save(strategy.model, "./../../checkpoints/knn_l2p_cifar100.pt")
