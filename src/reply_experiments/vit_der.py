@@ -187,6 +187,9 @@ class ViTDER(DER):
             self.res["logits"] = self.model(x=self.mb_x)
             self.res["reduce_sim"] = 0
 
+            if not hasattr(self.model, "prompt"):
+                self.res["reduce_sim"] = 0
+
         logits = self.res["logits"]
 
         if self.use_mask and self.is_training:

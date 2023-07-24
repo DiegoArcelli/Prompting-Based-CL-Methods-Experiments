@@ -28,14 +28,26 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # device = "cpu"
 
 num_classes = 100
-benchmark = SplitCIFAR100(
-    n_experiences= 5 if num_classes == 10 else 10,
-    seed=42,
-    fixed_class_order=[c for c in range(num_classes)],
-    return_task_id=False,
-    train_transform=train_transform,
-    eval_transform=eval_transform
-)
+
+if num_classes == 10:
+    benchmark = SplitCIFAR10(
+        n_experiences=5,
+        seed=42,
+        fixed_class_order=[c for c in range(num_classes)],
+        return_task_id=False,
+        train_transform=train_transform,
+        eval_transform=eval_transform
+    )
+else:
+    benchmark = SplitCIFAR100(
+        n_experiences=10,
+        seed=42,
+        fixed_class_order=[c for c in range(num_classes)],
+        return_task_id=False,
+        train_transform=train_transform,
+        eval_transform=eval_transform
+    )
+
 
 strategy = KNNLearningToPrompt(
             model=None,

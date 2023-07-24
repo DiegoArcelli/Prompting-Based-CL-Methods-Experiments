@@ -153,6 +153,10 @@ class ViTGDumb(GDumb):
                 cls_features=cls_features,
                 train=self.train_prompt_mask,
             )
+            
+            if not hasattr(self.model, "prompt"):
+                self.res["reduce_sim"] = 0
+
         else:
             self.res = {}
             self.res["logits"] = self.model(x=self.mb_x)
@@ -167,3 +171,9 @@ class ViTGDumb(GDumb):
             logits = logits.index_fill(dim=1, index=not_mask, value=float("-inf"))
 
         return logits
+    
+
+    def criterion(self):
+        loss = self._criterion(self.mb_output, self.mb_y)
+        loss = loss - self.sim_coefficient * self.res["reduce_sim"]
+        return loss

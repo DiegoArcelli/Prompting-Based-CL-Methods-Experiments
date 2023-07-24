@@ -236,6 +236,7 @@ class KNNLearningToPrompt(LearningToPrompt):
             key_class_map[i] = pred_class
         return key_class_map
     
+    
     def backward(self):
         if not self.knn_mode:
             self.loss.backward(retain_graph=self.retain_graph)
