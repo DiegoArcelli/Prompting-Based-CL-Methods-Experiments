@@ -58,12 +58,25 @@ strategy = ViTGDumb(
     train_mb_size=8,
     eval_mb_size=2,
     device=device,
-    prompt_pool=False,
-    use_cls_features=False,
-    prompt_selection=False,
-    head_type="token",
     num_classes=num_classes,
-    use_vit=True
+    prompt_selection=True,
+    prompt_pool=True,
+    pool_size=10,
+    prompt_length=5,
+    top_k=5,
+    prompt_key=True,
+    pretrained=True,
+    embedding_key="cls",
+    prompt_init="uniform",
+    batchwise_prompt=False,
+    head_type="token+prompt",
+    use_prompt_mask=False,
+    train_prompt_mask=False,
+    use_cls_features=True,
+    use_mask=False,
+    use_vit=True,
+    lr = 0.03,
+    sim_coefficient = 0.5
 )
 
 count_parameters(strategy.model)

@@ -1,10 +1,14 @@
 import torch
 from torchvision import transforms
 from avalanche.benchmarks import SplitCIFAR100, SplitCIFAR10
-from torch.optim import SGD
 from torch.nn import CrossEntropyLoss
-from avalanche.models.vit import create_model
 from knn_l2p import KNNLearningToPrompt
+import os
+
+torch.cuda.set_per_process_memory_fraction(0.50)
+os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+seed = 42
+
 
 train_transform = transforms.Compose(
     [
@@ -32,7 +36,7 @@ num_classes = 10
 if num_classes == 10:
     benchmark = SplitCIFAR10(
         n_experiences=5,
-        seed=42,
+        seed=seed,
         fixed_class_order=[c for c in range(num_classes)],
         return_task_id=False,
         train_transform=train_transform,
@@ -41,7 +45,7 @@ if num_classes == 10:
 else:
     benchmark = SplitCIFAR100(
         n_experiences=10,
-        seed=42,
+        seed=seed,
         fixed_class_order=[c for c in range(num_classes)],
         return_task_id=False,
         train_transform=train_transform,
@@ -77,7 +81,8 @@ strategy = KNNLearningToPrompt(
             use_vit=True,
             lr = 0.03,
             sim_coefficient = 0.5,
-            k=3
+            k=3,
+            seed=seed
         )
 
 

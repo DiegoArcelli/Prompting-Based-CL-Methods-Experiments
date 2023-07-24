@@ -4,14 +4,13 @@ import torch
 from torch import nn
 from avalanche.training.supervised import LearningToPrompt
 from avalanche.training.templates import SupervisedTemplate
-from typing import Callable, Optional, Sequence, List, Union
+from typing import Callable, Optional, List, Union
 from avalanche.training.plugins import SupervisedPlugin, EvaluationPlugin
 from avalanche.training.plugins.evaluation import EvaluationPlugin, default_evaluator
 from avalanche.models.vit import create_model
 import numpy as np
 from functools import reduce
 import torch.nn.functional as F
-    
 
 class KNNLearningToPrompt(LearningToPrompt):
 
