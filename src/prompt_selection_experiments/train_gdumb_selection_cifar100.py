@@ -4,10 +4,22 @@ import torch
 from torchvision import transforms
 from vit_gdumb import ViTGDumb
 from avalanche.benchmarks import SplitCIFAR100, SplitCIFAR10
-from torch.optim import SGD
 from torch.nn import CrossEntropyLoss
-from avalanche.models.vit import create_model
 from utils import count_parameters
+from avalanche.training.plugins import EvaluationPlugin
+from avalanche.logging import InteractiveLogger, TextLogger
+from avalanche.evaluation.metrics import accuracy_metrics, loss_metrics, forgetting_metrics
+
+
+text_logger = TextLogger(open("log.txt", "a"))
+interactive_logger = InteractiveLogger()
+
+eval_plugin = EvaluationPlugin(
+    accuracy_metrics(minibatch=True, epoch=True, experience=True, stream=True),
+    loss_metrics(minibatch=True, epoch=True, experience=True, stream=True),
+    forgetting_metrics(experience=True, stream=True),
+    loggers=[interactive_logger, text_logger],
+)
 
 train_transform = transforms.Compose(
     [
@@ -76,7 +88,8 @@ strategy = ViTGDumb(
     use_mask=False,
     use_vit=True,
     lr = 0.03,
-    sim_coefficient = 0.5
+    sim_coefficient = 0.5,
+    #evaluator=eval_plugin,
 )
 
 count_parameters(strategy.model)
@@ -86,4 +99,4 @@ for experience in benchmark.train_stream:
     print("Start of experience: ", experience.current_experience)
     print("Current Classes: ", experience.classes_in_this_experience)
     strategy.train(experience)
-results.append(strategy.eval(benchmark.test_stream))
+    results.append(strategy.eval(benchmark.test_stream))
