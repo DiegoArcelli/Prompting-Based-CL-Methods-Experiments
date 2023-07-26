@@ -8,7 +8,7 @@ from avalanche.logging import InteractiveLogger, TextLogger
 from avalanche.evaluation.metrics import accuracy_metrics, loss_metrics, forgetting_metrics
 import os
 
-# torch.cuda.set_per_process_memory_fraction(0.50)
+torch.cuda.set_per_process_memory_fraction(0.5)
 # os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 seed = 42
 
@@ -52,7 +52,7 @@ if num_classes == 10:
         fixed_class_order=[c for c in range(num_classes)],
         return_task_id=False,
         train_transform=train_transform,
-        eval_transform=eval_transform
+        eval_transform=eval_transform,
     )
 else:
     benchmark = SplitCIFAR100(
@@ -69,8 +69,8 @@ strategy = KNNLearningToPrompt(
             model=None,
             model_name='vit_tiny_patch16_224',
             criterion=CrossEntropyLoss(),
-            train_mb_size=2,
-            eval_mb_size=2,
+            train_mb_size=24,
+            eval_mb_size=24,
             device=device,
             train_epochs=5,
             num_classes=num_classes,
