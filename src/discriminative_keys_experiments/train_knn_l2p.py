@@ -4,8 +4,10 @@ from avalanche.benchmarks import SplitCIFAR100, SplitCIFAR10
 from torch.nn import CrossEntropyLoss
 from knn_l2p import KNNLearningToPrompt
 from avalanche.training.plugins import EvaluationPlugin
+from avalanche.training.plugins.early_stopping import EarlyStoppingPlugin
 from avalanche.logging import InteractiveLogger, TextLogger
 from avalanche.evaluation.metrics import accuracy_metrics, loss_metrics, forgetting_metrics
+from avalanche.benchmarks.generators import benchmark_with_validation_stream
 import os
 
 torch.cuda.set_per_process_memory_fraction(0.5)
@@ -16,10 +18,17 @@ text_logger = TextLogger(open("logs/knn_l2p.txt", "a"))
 interactive_logger = InteractiveLogger()
 
 eval_plugin = EvaluationPlugin(
-    accuracy_metrics(minibatch=True, epoch=True, experience=True, stream=True),
-    loss_metrics(minibatch=True, epoch=True, experience=True, stream=True),
+    accuracy_metrics(epoch=True, experience=True, stream=True),
+    loss_metrics(epoch=True, experience=True, stream=True),
     forgetting_metrics(experience=True, stream=True),
     loggers=[interactive_logger, text_logger],
+)
+
+early_stop = EarlyStoppingPlugin(
+    patience=1,
+    val_stream_name="val_stream",
+    mode="min",
+    verbose=True
 )
 
 train_transform = transforms.Compose(
@@ -43,7 +52,7 @@ eval_transform = transforms.Compose(
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # device = "cpu"
 
-num_classes = 10
+num_classes = 100
 
 if num_classes == 10:
     benchmark = SplitCIFAR10(
@@ -61,16 +70,17 @@ else:
         fixed_class_order=[c for c in range(num_classes)],
         return_task_id=False,
         train_transform=train_transform,
-        eval_transform=eval_transform
+        eval_transform=eval_transform,
     )
 
+benchmark = benchmark_with_validation_stream(benchmark, 0.05)
 
 strategy = KNNLearningToPrompt(
             model=None,
-            model_name='vit_tiny_patch16_224',
+            model_name='vit_base_patch16_224',
             criterion=CrossEntropyLoss(),
-            train_mb_size=24,
-            eval_mb_size=24,
+            train_mb_size=16,
+            eval_mb_size=16,
             device=device,
             train_epochs=5,
             num_classes=num_classes,
@@ -82,7 +92,7 @@ strategy = KNNLearningToPrompt(
             pretrained=True,
             embedding_key="cls",
             prompt_init="uniform",
-            batchwise_prompt=True,
+            batchwise_prompt=False,
             head_type="prompt",
             use_prompt_mask=False,
             # train_mask=True,
@@ -94,15 +104,21 @@ strategy = KNNLearningToPrompt(
             drop_rate=0.0,
             drop_path_rate=0.0,
             k=3,
-            seed=seed
+            seed=seed,
+            evaluator=eval_plugin,
+            plugins=[early_stop],
+            eval_every=1
         )
 
+train_stream = strategy.train_stream
+valid_stream = strategy.valid_stream
+test_stream = strategy.test_stream
 
 results = []
-for experience in benchmark.train_stream:
-    print("Start of experience: ", experience.current_experience)
-    print("Current Classes: ", experience.classes_in_this_experience)
-    strategy.train(experience)
-    results.append(strategy.eval(benchmark.test_stream))
+for t, (train_exp, valid_exp) in enumerate(zip(train_stream, valid_stream)):
+    print("Start of experience: ", train_exp.current_experience)
+    print("Current Classes: ", train_exp.classes_in_this_experience)
+    strategy.train(train_exp, eval_streams=[valid_exp])
+    results.append(strategy.eval(benchmark.test_stream[:t+1]))
 
 torch.save(strategy.model, "./../../checkpoints/knn_l2p_cifar100.pt")
