@@ -62,7 +62,8 @@ if num_classes == 10:
         fixed_class_order=[c for c in range(num_classes)],
         return_task_id=False,
         train_transform=train_transform,
-        eval_transform=eval_transform
+        eval_transform=eval_transform,
+        shuffle=True
     )
 else:
     benchmark = SplitCIFAR100(
@@ -71,10 +72,11 @@ else:
         fixed_class_order=[c for c in range(num_classes)],
         return_task_id=False,
         train_transform=train_transform,
-        eval_transform=eval_transform
+        eval_transform=eval_transform,
+        shuffle=True
     )
 
-benchmark = benchmark_with_validation_stream(benchmark, 0.05)
+benchmark = benchmark_with_validation_stream(benchmark, 0.05, shuffle=True)
 
 strategy = ViTGDumb(
     model_name="vit_tiny_patch16_224",

@@ -27,7 +27,6 @@ eval_plugin = EvaluationPlugin(
 early_stop = EarlyStoppingPlugin(
     patience=1,
     val_stream_name="val_stream",
-    mode="min",
     verbose=True
 )
 
@@ -62,6 +61,7 @@ if num_classes == 10:
         return_task_id=False,
         train_transform=train_transform,
         eval_transform=eval_transform,
+        shuffle=True
     )
 else:
     benchmark = SplitCIFAR100(
@@ -71,9 +71,10 @@ else:
         return_task_id=False,
         train_transform=train_transform,
         eval_transform=eval_transform,
+        shuffle=True
     )
 
-benchmark = benchmark_with_validation_stream(benchmark, 0.05)
+benchmark = benchmark_with_validation_stream(benchmark, 0.05, shuffle=True)
 
 strategy = KNNLearningToPrompt(
             model=None,
@@ -110,9 +111,9 @@ strategy = KNNLearningToPrompt(
             eval_every=1
         )
 
-train_stream = strategy.train_stream
-valid_stream = strategy.valid_stream
-test_stream = strategy.test_stream
+train_stream = benchmark.train_stream
+valid_stream = benchmark.valid_stream
+test_stream = benchmark.test_stream
 
 results = []
 for t, (train_exp, valid_exp) in enumerate(zip(train_stream, valid_stream)):
