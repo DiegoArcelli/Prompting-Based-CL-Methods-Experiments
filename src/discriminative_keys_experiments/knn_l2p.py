@@ -11,6 +11,7 @@ from avalanche.models.vit import create_model
 import numpy as np
 from functools import reduce
 import torch.nn.functional as F
+import numpy as np
 
 class KNNLearningToPrompt(LearningToPrompt):
 
@@ -174,12 +175,14 @@ class KNNLearningToPrompt(LearningToPrompt):
 
             # iterate over each prediction
             for i in range(classes.shape[0]):
-                pred_class = classes[i].item() # get the predicted class
+                _class = classes[i].item() # get the predicted class
                 # iterate over each prompt selected prompt for the i-th element of the batch
                 for j in range(self.model.prompt.top_k): 
                     key_id = self.res["prompt_idx"][i][j].item() # get the j-th selected prompt of the i-th batch element
                     # increase the key-class counter
-                    self.model.key_class_counts[(key_id, pred_class)] += 1
+                    task = _class // 10
+                    self.model.key_class_counts[key_id][_class] += 1
+                    self.model.key_task_counts[key_id][task] += 1
             return logits
 
         
@@ -214,17 +217,21 @@ class KNNLearningToPrompt(LearningToPrompt):
             for _, p in self.model.named_parameters():
                 p.requires_grad = False
             self.knn_mode = True
-            self.model.key_class_counts = {(k, c): 0 for k in range(self.model.prompt.pool_size) for c in range(self.model.num_classes)}
-    
+            self.num_tasks = 10 if self.num_classes == 100 else 5
+
+            self.model.key_class_counts = {k: {c: 0 for c in range(self.num_classes)} for k in range(self.model.prompt.pool_size)}
+            self.model.key_task_counts = {k: {t: 0 for t in range(self.num_tasks)} for k in range(self.model.prompt.pool_size)}
+
 
     def key_class_mapping(self):
         # create a dict that maps a prompt key to its most predicted class
         key_class_map = {x: None for x in range(self.model.prompt.pool_size)}
         for i in range(self.model.prompt.pool_size):
             # select the class count dictionary for the i-th key of the pool
-            sub_dict = {c: v for (k,c), v in self.model.key_class_counts.items() if k == i}
+            sub_dict = self.model.key_class_counts[i]
             # find in the class count dict the most predicted class for that key
-            pred_class, count = reduce(lambda a, x: x if x[1] > a[1] else a, sub_dict.items(), (0, 0))
+            counts = list(sub_dict.values())    
+            pred_class = np.argmax(counts)
             key_class_map[i] = pred_class
         return key_class_map
     

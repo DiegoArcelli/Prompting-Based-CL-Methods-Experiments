@@ -31,7 +31,7 @@ eval_transform = transforms.Compose(
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # device = "cpu"
 
-num_classes = 10
+num_classes = 100
 
 if num_classes == 10:
     benchmark = SplitCIFAR10(
@@ -53,7 +53,7 @@ else:
     )
 
 
-model = torch.load("./../../checkpoints/knn_l2p_cifar100.pt")
+model = torch.load("./../../checkpoints/knn_l2p_tiny_cifar100.pt")
 
 strategy = KNNLearningToPrompt(
             model=model,
@@ -94,3 +94,7 @@ for experience in benchmark.train_stream:
     strategy.train(experience)
 
 results.append(strategy.eval(benchmark.test_stream))
+
+#print(strategy.model.key_class_map)
+
+strategy.model.key_class_count
