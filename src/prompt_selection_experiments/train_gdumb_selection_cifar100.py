@@ -11,11 +11,12 @@ from avalanche.logging import InteractiveLogger, TextLogger
 from avalanche.evaluation.metrics import accuracy_metrics, loss_metrics, forgetting_metrics
 from avalanche.benchmarks.generators import benchmark_with_validation_stream
 from avalanche.training.plugins.early_stopping import EarlyStoppingPlugin
-from avalanche.training import GDumb
-from avalanche.models import SimpleCNN
 
+torch.cuda.set_per_process_memory_fraction(0.5)
 
-text_logger = TextLogger(open("log.txt", "a"))
+seed = 42
+
+text_logger = TextLogger(open("logs/log.txt", "a"))
 interactive_logger = InteractiveLogger()
 
 eval_plugin = EvaluationPlugin(
@@ -24,8 +25,6 @@ eval_plugin = EvaluationPlugin(
     forgetting_metrics(experience=True, stream=True),
     loggers=[interactive_logger, text_logger],
 )
-
-
 
 early_stop = EarlyStoppingPlugin(
     patience=1,
@@ -53,7 +52,7 @@ eval_transform = transforms.Compose(
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # device="cpu"
-num_classes=10
+num_classes=100
 
 if num_classes == 10:
     benchmark = SplitCIFAR10(
@@ -79,12 +78,12 @@ else:
 benchmark = benchmark_with_validation_stream(benchmark, 0.05, shuffle=True)
 
 strategy = ViTGDumb(
-    model_name="vit_tiny_patch16_224",
+    model_name="vit_base_patch16_224",
     criterion=CrossEntropyLoss(),
-    mem_size=100,
-    train_epochs=100,
-    train_mb_size=2,
-    eval_mb_size=2,
+    mem_size=5000,
+    train_epochs=5,
+    train_mb_size=16,
+    eval_mb_size=16,
     device=device,
     num_classes=num_classes,
     prompt_selection=True,
@@ -99,12 +98,17 @@ strategy = ViTGDumb(
     batchwise_prompt=False,
     head_type="prompt",
     use_prompt_mask=False,
-    train_prompt_mask=False,
+    # train_mask=True,
     use_cls_features=True,
-    use_mask=False,
+    use_mask=True,
     use_vit=True,
     lr = 0.03,
     sim_coefficient = 0.1,
+    drop_rate=0.0,
+    drop_path_rate=0.0,
+    k=3,
+    seed=seed,
+    evaluator=eval_plugin,
     plugins=[early_stop],
     eval_every=1
 )

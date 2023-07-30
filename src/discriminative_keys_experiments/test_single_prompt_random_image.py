@@ -77,7 +77,7 @@ with tqdm(total=n_iters*(pool_size+1)) as pbar:
     for _ in range(n_iters):
         rand_batch = torch.rand(2, 3, 224, 224).to(device)
         for i in prompt_ids:
-            res = prompt_forward(model, rand_batch, i)
+            res = prompt_forward(model, rand_batch, [i])
             preds = res["logits"].argmax(dim=1)
             for pred in preds:
                 pred_class[i][pred.item()] += 1
