@@ -3,10 +3,13 @@ from torchvision import transforms
 from avalanche.benchmarks import SplitCIFAR100, SplitCIFAR10
 from torch.nn import CrossEntropyLoss
 from knn_l2p import KNNLearningToPrompt
-import os
+from avalanche.training.plugins import EvaluationPlugin
+from avalanche.logging import InteractiveLogger, TextLogger
+from avalanche.evaluation.metrics import accuracy_metrics, loss_metrics, forgetting_metrics
+
 
 torch.cuda.set_per_process_memory_fraction(0.50)
-os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 seed = 42
 
 
@@ -28,8 +31,18 @@ eval_transform = transforms.Compose(
     ]
 )
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 # device = "cpu"
+
+text_logger = TextLogger(open("logs/log_keys_knn_l2p.txt", "a"))
+interactive_logger = InteractiveLogger()
+
+eval_plugin = EvaluationPlugin(
+    accuracy_metrics(epoch=True, experience=True, stream=True),
+    loss_metrics(epoch=True, experience=True, stream=True),
+    forgetting_metrics(experience=True, stream=True),
+    loggers=[interactive_logger, text_logger],
+)
 
 num_classes = 100
 
@@ -56,14 +69,14 @@ else:
 model = torch.load("./../../checkpoints/knn_l2p_tiny_cifar100.pt")
 
 strategy = KNNLearningToPrompt(
-            model=model,
-            model_name='vit_tiny_patch16_224',#"simpleMLP",
+            model=None,
+            model_name='vit_base_patch16_224',
             criterion=CrossEntropyLoss(),
-            train_mb_size=4,
+            train_mb_size=16,
+            eval_mb_size=16,
             device=device,
-            train_epochs=1,
+            train_epochs=5,
             num_classes=num_classes,
-            eval_mb_size=8,
             prompt_pool=True,
             pool_size=10,
             prompt_length=5,
@@ -73,17 +86,20 @@ strategy = KNNLearningToPrompt(
             embedding_key="cls",
             prompt_init="uniform",
             batchwise_prompt=False,
-            head_type="token+prompt",
+            head_type="prompt",
             use_prompt_mask=False,
-            train_prompt_mask=False,
+            # train_mask=True,
             use_cls_features=True,
             use_mask=True,
             use_vit=True,
             lr = 0.03,
-            sim_coefficient = 0.5,
+            sim_coefficient = 0.1,
+            drop_rate=0.0,
+            drop_path_rate=0.0,
             k=3,
-            predict_task=True,
-            seed=seed
+            seed=seed,
+            evaluator=eval_plugin,
+            # eval_every=1
         )
 
 
@@ -94,4 +110,7 @@ results = []
 for experience in benchmark.train_stream:
     strategy.train(experience)
 
-results.append(strategy.eval(benchmark.test_stream))
+for k in range(1, 11):
+    print(f"Results for k={k}")
+    strategy.k = k
+    results.append(strategy.eval(benchmark.test_stream))
