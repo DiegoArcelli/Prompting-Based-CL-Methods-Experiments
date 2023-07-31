@@ -3,9 +3,14 @@ from torchvision import transforms
 from avalanche.benchmarks import SplitCIFAR100, SplitCIFAR10
 from torch.nn import CrossEntropyLoss
 from avalanche.training import LearningToPrompt
-import os
+from avalanche.training.plugins import EvaluationPlugin
+from avalanche.logging import InteractiveLogger, TextLogger
+from avalanche.evaluation.metrics import accuracy_metrics, loss_metrics, forgetting_metrics
+from avalanche.benchmarks.generators import benchmark_with_validation_stream
+from avalanche.training.plugins.early_stopping import EarlyStoppingPlugin
 
-# torch.cuda.set_per_process_memory_fraction(0.50)
+
+torch.cuda.set_per_process_memory_fraction(0.50)
 # os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 seed = 42
 
@@ -28,10 +33,26 @@ eval_transform = transforms.Compose(
     ]
 )
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 # device = "cpu"
 
-num_classes = 10
+num_classes = 100
+
+text_logger = TextLogger(open("logs/log.txt", "a"))
+interactive_logger = InteractiveLogger()
+
+eval_plugin = EvaluationPlugin(
+    accuracy_metrics(epoch=True, experience=True, stream=True),
+    loss_metrics(epoch=True, experience=True, stream=True),
+    forgetting_metrics(experience=True, stream=True),
+    loggers=[interactive_logger, text_logger],
+)
+
+early_stop = EarlyStoppingPlugin(
+    patience=2,
+    val_stream_name="valid_stream",
+    verbose=True,
+)
 
 if num_classes == 10:
     benchmark = SplitCIFAR10(
@@ -52,15 +73,16 @@ else:
         eval_transform=eval_transform
     )
 
+benchmark = benchmark_with_validation_stream(benchmark, 0.05, shuffle=True)
 
 strategy = LearningToPrompt(
-            model_name='vit_tiny_patch16_224',#"simpleMLP",
+            model_name='vit_base_patch16_224',#"simpleMLP",
             criterion=CrossEntropyLoss(),
-            train_mb_size=8,
-            device=device,
-            train_epochs=1,
-            num_classes=num_classes,
+            train_mb_size=16,
             eval_mb_size=8,
+            device=device,
+            train_epochs=10,
+            num_classes=num_classes,
             prompt_pool=True,
             pool_size=10,
             prompt_length=5,
@@ -70,22 +92,26 @@ strategy = LearningToPrompt(
             embedding_key="cls",
             prompt_init="uniform",
             batchwise_prompt=False,
-            head_type="token+prompt",
+            head_type="prompt",
             use_prompt_mask=False,
             train_prompt_mask=False,
             use_cls_features=True,
-            use_mask=True,
+            use_mask=False,
             use_vit=True,
             lr = 0.03,
-            sim_coefficient = 0.5,
-            k=3,
-            seed=seed
+            sim_coefficient = 0.1,
+            drop_rate=0.0,
+            drop_path_rate=0.0,
+            evaluator=eval_plugin,
+            plugins=[early_stop],
+            eval_every=1
         )
 
-
 results = []
-for experience in benchmark.train_stream:
-    print("Start of experience: ", experience.current_experience)
-    print("Current Classes: ", experience.classes_in_this_experience)
-    strategy.train(experience)
-    results.append(strategy.eval(benchmark.test_stream))
+for train_experience, valid_experience in zip(benchmark.train_stream, benchmark.valid_stream):
+    print("Start of experience: ", train_experience.current_experience)
+    print("Current Classes: ", train_experience.classes_in_this_experience)
+    strategy.train(train_experience, eval_streams=[valid_experience])
+    # strategy.eval()
+    # strategy.eval(benchmark.valid_stream[t])
+results.append(strategy.eval(benchmark.test_stream))

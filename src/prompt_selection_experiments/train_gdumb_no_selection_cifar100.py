@@ -6,7 +6,6 @@ from vit_gdumb import ViTGDumb
 from avalanche.benchmarks import SplitCIFAR100, SplitCIFAR10
 from torch.optim import SGD
 from torch.nn import CrossEntropyLoss
-from avalanche.models.vit import create_model
 from utils import count_parameters
 from avalanche.training.plugins import EvaluationPlugin
 from avalanche.logging import InteractiveLogger, TextLogger
@@ -96,7 +95,9 @@ strategy = ViTGDumb(
     prompt_length=5,
     top_k=10,
     sim_coefficient=0,
-    seed=seed
+    evaluator=eval_plugin,
+    plugins=[early_stop],
+    eval_every=1
 )
 
 
@@ -104,8 +105,10 @@ strategy = ViTGDumb(
 count_parameters(strategy.model)
 
 results = []
-for experience in benchmark.train_stream:
-    print("Start of experience: ", experience.current_experience)
-    print("Current Classes: ", experience.classes_in_this_experience)
-    strategy.train(experience)
+for train_experience, valid_experience in zip(benchmark.train_stream, benchmark.valid_stream):
+    print("Start of experience: ", train_experience.current_experience)
+    print("Current Classes: ", train_experience.classes_in_this_experience)
+    strategy.train(train_experience, eval_streams=[valid_experience])
+    # strategy.eval()
+    # strategy.eval(benchmark.valid_stream[t])
 results.append(strategy.eval(benchmark.test_stream))

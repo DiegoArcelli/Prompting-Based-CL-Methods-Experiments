@@ -27,7 +27,7 @@ eval_plugin = EvaluationPlugin(
 early_stop = EarlyStoppingPlugin(
     patience=1,
     val_stream_name="val_stream",
-    verbose=True
+    verbose=True,
 )
 
 train_transform = transforms.Compose(
