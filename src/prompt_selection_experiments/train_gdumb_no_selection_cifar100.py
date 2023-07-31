@@ -18,7 +18,7 @@ torch.cuda.set_per_process_memory_fraction(0.5)
 seed = 42
 
 
-text_logger = TextLogger(open("logs/log.txt", "a"))
+text_logger = TextLogger(open("logs/log_offline_l2p.txt", "a"))
 interactive_logger = InteractiveLogger()
 
 eval_plugin = EvaluationPlugin(

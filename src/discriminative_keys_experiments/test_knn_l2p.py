@@ -59,7 +59,7 @@ strategy = KNNLearningToPrompt(
             model=model,
             model_name='vit_tiny_patch16_224',#"simpleMLP",
             criterion=CrossEntropyLoss(),
-            train_mb_size=8,
+            train_mb_size=4,
             device=device,
             train_epochs=1,
             num_classes=num_classes,
@@ -82,6 +82,7 @@ strategy = KNNLearningToPrompt(
             lr = 0.03,
             sim_coefficient = 0.5,
             k=3,
+            predict_task=True,
             seed=seed
         )
 
@@ -94,7 +95,3 @@ for experience in benchmark.train_stream:
     strategy.train(experience)
 
 results.append(strategy.eval(benchmark.test_stream))
-
-#print(strategy.model.key_class_map)
-
-strategy.model.key_class_count

@@ -18,7 +18,7 @@ n_classes = 100
 # rand_batch = torch.randn(16, 3, 224, 224)
 prompts = list(itertools.combinations([x for x in range(10)], 5))
 comb = len(prompts)
-pred_class = {x: {c: 0 for c in range(100)} for x in range(comb)}
+pred_class = {x: {c: 0 for c in range(n_classes)} for x in range(comb)}
 
 n_iters = 2
 
@@ -35,5 +35,5 @@ with tqdm(total=n_iters*comb) as pbar:
 
 for i, prompt in enumerate(prompts):
     print(f"Prompt {prompt}")
-    print(print_top_k_classes(pred_class[i], 10))
+    print(get_top_k_classes(pred_class[i], 10))
     print("\n")

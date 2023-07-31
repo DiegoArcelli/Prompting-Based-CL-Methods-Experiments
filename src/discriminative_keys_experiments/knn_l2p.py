@@ -52,6 +52,7 @@ class KNNLearningToPrompt(LearningToPrompt):
         use_mask: bool = True,
         use_vit: bool = True,
         knn_mode: bool = False,
+        predict_task: bool = False,
         **kwargs,
     ):
         
@@ -117,6 +118,7 @@ class KNNLearningToPrompt(LearningToPrompt):
         self.use_mask = use_mask
         self.use_vit = use_vit
         self.knn_mode = knn_mode
+        self.predict_task = predict_task
 
         if use_cls_features:
             self.original_vit = create_model(
@@ -199,8 +201,12 @@ class KNNLearningToPrompt(LearningToPrompt):
             # find the top k keys for each element of the batch
             _, idx = torch.topk(similarity, k=self.k, dim=1) # (B, K)
 
-            # we map each one of the top k keys to its correspondent class
-            key_class_map = self.key_class_mapping()            
+            # we map each one of the top k keys to its correspondent class    
+            key_class_map = self.key_class_mapping()    
+
+            if self.predict_task:
+                self.mb_y = self.mb_y // self.num_tasks
+
             classes = idx.detach().cpu().apply_(lambda x: key_class_map[x]).to(self.device) # (B, K)
 
             # compute the most present classes for each batch element
@@ -228,7 +234,10 @@ class KNNLearningToPrompt(LearningToPrompt):
         key_class_map = {x: None for x in range(self.model.prompt.pool_size)}
         for i in range(self.model.prompt.pool_size):
             # select the class count dictionary for the i-th key of the pool
-            sub_dict = self.model.key_class_counts[i]
+            if self.predict_task:
+                sub_dict = self.model.key_task_counts[i]
+            else:
+                sub_dict = self.model.key_class_counts[i]
             # find in the class count dict the most predicted class for that key
             counts = list(sub_dict.values())    
             pred_class = np.argmax(counts)

@@ -7,7 +7,7 @@ from tqdm import tqdm
 torch.cuda.set_per_process_memory_fraction(0.50)
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-model = torch.load("./../../checkpoints/knn_l2p_tiny_cifar100.pt")
+model = torch.load("./../../checkpoints/knn_l2p_base_cifar100.pt")
 model = model.to(device)
 model.eval()
 
@@ -38,4 +38,4 @@ for i in prompt_ids:
         print(f"Prompt {i}")
     else:
         print("No prompt:")
-    print(print_top_k_classes(pred_class[i], 10))
+    print(get_top_k_classes(pred_class[i], 10))

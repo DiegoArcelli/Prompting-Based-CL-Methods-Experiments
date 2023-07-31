@@ -7,9 +7,11 @@ def count_parameters(model):
     print(f'The model has {n_params_trainable} trainable parameters')
 
 
-def print_top_k_classes(preds, k):
-    return sorted(preds.items(), key=lambda x: x[1])[::-1][:k]
-
+def get_top_k_classes(preds, k : int):
+    top_k = sorted(preds.items(), key=lambda x: x[1])[::-1][:k]
+    non_zero_top_k =  [(_class, count) for (_class, count) in top_k if count != 0]
+    formatted_top_k = [f"Class {_class}: {count}" for (_class, count) in non_zero_top_k]
+    return ", ".join(formatted_top_k)
 
 def adjust_pos_embed(x, pos_embed):
     pos_len = pos_embed.shape[1]
@@ -38,16 +40,22 @@ def prompt_forward_features(model, x, prompt_ids):
     out = {}
     batch_size = x.shape[0]
 
-    prompts = model.prompt.prompt
-    selected_prompts = prompts[prompt_ids]
 
-    n_selected, length, dim = selected_prompts.shape
+    if prompt_ids != [-1]:
+        prompts = model.prompt.prompt
+        selected_prompts = prompts[prompt_ids]
 
-    selected_prompts = selected_prompts.unsqueeze(0).repeat(batch_size, 1, 1, 1)
-    selected_prompts = selected_prompts.reshape(batch_size, n_selected*length, dim)
-    out["total_prompt_len"] = selected_prompts.shape[1]
+        n_selected, length, dim = selected_prompts.shape
+
+        selected_prompts = selected_prompts.unsqueeze(0).repeat(batch_size, 1, 1, 1)
+        selected_prompts = selected_prompts.reshape(batch_size, n_selected*length, dim)
+        out["total_prompt_len"] = selected_prompts.shape[1]
+        x = torch.cat([selected_prompts, x_embed], dim=1)
+    else:
+        out["total_prompt_len"] = 0
+        x = x_embed
+
     model.total_prompt_len = out["total_prompt_len"]
-    x = torch.cat([selected_prompts, x_embed], dim=1)
     x = torch.cat((model.cls_token.expand(x.shape[0], -1, -1), x), dim=1)
     model.pos_embed = adjust_pos_embed(x, model.pos_embed)
     x = model.pos_drop(x + model.pos_embed)
