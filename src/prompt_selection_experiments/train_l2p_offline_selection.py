@@ -38,7 +38,7 @@ device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 num_classes = 100
 
-text_logger = TextLogger(open("logs/log.txt", "a"))
+text_logger = TextLogger(open("logs/log_l2p_offline.txt", "a"))
 interactive_logger = InteractiveLogger()
 
 eval_plugin = EvaluationPlugin(
