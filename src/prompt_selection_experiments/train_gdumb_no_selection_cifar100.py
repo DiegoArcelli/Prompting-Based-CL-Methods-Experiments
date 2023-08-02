@@ -30,7 +30,7 @@ eval_plugin = EvaluationPlugin(
 
 early_stop = EarlyStoppingPlugin(
     patience=2,
-    val_stream_name="val_stream",
+    val_stream_name="valid_stream",
     verbose=True,
     mode="min",
     metric_name="Loss_Stream"
@@ -80,7 +80,7 @@ else:
 benchmark = benchmark_with_validation_stream(benchmark, 0.05, shuffle=True)
 
 strategy = ViTGDumb(
-    model_name="vit_base_patch16_224",
+    model_name="vit_tiny_patch16_224",
     criterion=CrossEntropyLoss(),
     mem_size=5000,
     train_epochs=5,
@@ -112,5 +112,3 @@ for t, (train_exp, valid_exp) in enumerate(zip(train_stream, valid_stream)):
     print("Current Classes: ", train_exp.classes_in_this_experience)
     strategy.train(train_exp, eval_streams=[valid_exp])
     results.append(strategy.eval(benchmark.test_stream[:t+1]))
-
-torch.save(strategy.model, "./../../checkpoints/knn_l2p_cifar100.pt")

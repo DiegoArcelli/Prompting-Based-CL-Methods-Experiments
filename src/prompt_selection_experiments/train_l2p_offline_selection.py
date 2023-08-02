@@ -52,6 +52,8 @@ early_stop = EarlyStoppingPlugin(
     patience=2,
     val_stream_name="valid_stream",
     verbose=True,
+    mode="min",
+    metric_name="Loss_Stream"
 )
 
 if num_classes == 10:

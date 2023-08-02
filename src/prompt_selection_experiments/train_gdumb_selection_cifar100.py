@@ -28,7 +28,7 @@ eval_plugin = EvaluationPlugin(
 
 early_stop = EarlyStoppingPlugin(
     patience=2,
-    val_stream_name="val_stream",
+    val_stream_name="valid_stream",
     verbose=True,
     mode="min",
     metric_name="Loss_Stream"
@@ -122,5 +122,3 @@ for t, (train_exp, valid_exp) in enumerate(zip(train_stream, valid_stream)):
     print("Current Classes: ", train_exp.classes_in_this_experience)
     strategy.train(train_exp, eval_streams=[valid_exp])
     results.append(strategy.eval(benchmark.test_stream[:t+1]))
-
-torch.save(strategy.model, "./../../checkpoints/knn_l2p_cifar100.pt")

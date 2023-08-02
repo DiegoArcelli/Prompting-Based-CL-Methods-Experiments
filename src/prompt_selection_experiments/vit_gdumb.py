@@ -92,6 +92,7 @@ class ViTGDumb(GDumb):
             lr=self.lr,
         )
         
+        print(plugins)
         super().__init__(
             model,
             optimizer,

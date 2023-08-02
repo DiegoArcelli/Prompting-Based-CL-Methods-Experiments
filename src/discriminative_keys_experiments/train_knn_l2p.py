@@ -27,7 +27,7 @@ eval_plugin = EvaluationPlugin(
 
 early_stop = EarlyStoppingPlugin(
     patience=2,
-    val_stream_name="val_stream",
+    val_stream_name="valid_stream",
     verbose=True,
     mode="min",
     metric_name="Loss_Stream"
