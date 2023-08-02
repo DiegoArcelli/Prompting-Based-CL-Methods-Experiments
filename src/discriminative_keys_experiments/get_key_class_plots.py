@@ -21,7 +21,7 @@ with tqdm(total=2*num_keys+num_tasks+num_classes) as pbar:
         plt.ylabel("Counts")
         #plt.xticks("Classes")
         plt.title(f"Key-class counts for key {i}")
-        plt.savefig(f'../../plots/key_class_counts_key_{i}.png')
+        plt.savefig(f'../../plots//key_class_counts/key_class_counts_key_{i}.png')
         plt.clf()
         pbar.update(1)
 
@@ -34,7 +34,7 @@ with tqdm(total=2*num_keys+num_tasks+num_classes) as pbar:
         plt.ylabel("Counts")
         #plt.xticks("Classes")
         plt.title(f"Key-task counts for key {i}")
-        plt.savefig(f'../../plots/key_task_counts_key_{i}.png')
+        plt.savefig(f'../../plots/key_task_counts/key_task_counts_key_{i}.png')
         plt.clf()
         pbar.update(1)
 
@@ -49,7 +49,7 @@ with tqdm(total=2*num_keys+num_tasks+num_classes) as pbar:
         plt.ylabel("Counts")
         #plt.xticks("Classes")
         plt.title(f"Key-task counts for task {i}")
-        plt.savefig(f'../../plots/key_task_counts_task_{i}.png')
+        plt.savefig(f'../../plots/task_key_counts/task_key_counts_task_{i}.png')
         plt.clf()
         pbar.update(1)
 
@@ -62,8 +62,8 @@ with tqdm(total=2*num_keys+num_tasks+num_classes) as pbar:
         plt.xlabel("Keys")
         plt.ylabel("Counts")
         #plt.xticks("Classes")
-        plt.title(f"Key-class counts for task {i}")
-        plt.savefig(f'../../plots/key_class_counts_class_{i}.png')
+        plt.title(f"Key-class counts for class {i}")
+        plt.savefig(f'../../plots/class_key_counts/class_key_counts_class_{i}.png')
         plt.clf()
         pbar.update(1)
 
@@ -71,14 +71,16 @@ key_task_matrix = np.array([np.array([key_task_counts[i][j] for j in range(num_t
 hm = sns.heatmap(data=key_task_matrix, annot=False, square=True)
 plt.xlabel("Tasks")
 plt.ylabel("Keys")
-plt.savefig(f'../../plots/key_task_heatmap.png')
-plt.show()
+plt.savefig(f'../../plots/heatmaps/key_task_heatmap.png')
+plt.clf()
+# plt.show()
 
 
 key_class_matrix = np.array([np.array([key_class_counts[i][j] for j in range(num_classes)]) for i in range(num_keys)])
 hm = sns.heatmap(data=key_class_matrix, annot=False, square=True)
 plt.xlabel("Classes")
 plt.ylabel("Keys")
-plt.savefig(f'../../plots/key_class_heatmap.png')
-plt.show()
+plt.savefig(f'../../plots/heatmaps/key_class_heatmap.png')
+plt.clf()
+# plt.show()
 

@@ -5,9 +5,12 @@ from torchvision import transforms
 from vit_er import ViTER
 from avalanche.benchmarks import SplitCIFAR100, SplitCIFAR10
 from torch.nn import CrossEntropyLoss
-from avalanche.models.vit import create_model
 from utils import count_parameters
-
+from avalanche.training.plugins import EvaluationPlugin
+from avalanche.training.plugins.early_stopping import EarlyStoppingPlugin
+from avalanche.logging import InteractiveLogger, TextLogger
+from avalanche.evaluation.metrics import accuracy_metrics, loss_metrics, forgetting_metrics
+from avalanche.benchmarks.generators import benchmark_with_validation_stream
 
 train_transform = transforms.Compose(
     [
@@ -27,9 +30,27 @@ eval_transform = transforms.Compose(
     ]
 )
 
+text_logger = TextLogger(open("logs/log_er_no_selection.txt", "a"))
+interactive_logger = InteractiveLogger()
+
+eval_plugin = EvaluationPlugin(
+    accuracy_metrics(epoch=True, experience=True, stream=True),
+    loss_metrics(epoch=True, experience=True, stream=True),
+    forgetting_metrics(experience=True, stream=True),
+    loggers=[interactive_logger, text_logger],
+)
+
+early_stop = EarlyStoppingPlugin(
+    patience=2,
+    val_stream_name="val_stream",
+    verbose=True,
+    mode="min",
+    metric_name="Loss_Stream"
+)
+
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # device="cpu"
-num_classes=10
+num_classes=100
 
 if num_classes == 10:
     benchmark = SplitCIFAR10(
@@ -50,33 +71,42 @@ else:
         eval_transform=eval_transform
     )
 
+benchmark = benchmark_with_validation_stream(benchmark, 0.05, shuffle=True)
 
 strategy = ViTER(
-    model_name="vit_tiny_patch16_224",
+    model_name="vit_base_patch16_224",
     criterion=CrossEntropyLoss(),
-    mem_size=100,
-    train_epochs=1,
-    train_mb_size=8,
-    eval_mb_size=2,
+    mem_size=5000,
+    train_epochs=5,
+    train_mb_size=16,
+    eval_mb_size=16,
     device=device,
     prompt_pool=True,
     use_cls_features=False,
     prompt_selection=False,
-    head_type="token+prompt",
+    head_type="prompt",
     num_classes=num_classes,
     pool_size=10,
     prompt_length=5,
     top_k=10,
-    sim_coefficient=0
-
+    sim_coefficient=0,
+    evaluator=eval_plugin,
+    plugins=[early_stop],
+    eval_every=1
 )
 
 # print(strategy.model)
 count_parameters(strategy.model)
 
+train_stream = benchmark.train_stream
+valid_stream = benchmark.valid_stream
+test_stream = benchmark.test_stream
+
 results = []
-for experience in benchmark.train_stream:
-    print("Start of experience: ", experience.current_experience)
-    print("Current Classes: ", experience.classes_in_this_experience)
-    strategy.train(experience)
-results.append(strategy.eval(benchmark.test_stream))
+for t, (train_exp, valid_exp) in enumerate(zip(train_stream, valid_stream)):
+    print("Start of experience: ", train_exp.current_experience)
+    print("Current Classes: ", train_exp.classes_in_this_experience)
+    strategy.train(train_exp, eval_streams=[valid_exp])
+    results.append(strategy.eval(benchmark.test_stream[:t+1]))
+
+torch.save(strategy.model, "./../../checkpoints/knn_l2p_cifar100.pt")

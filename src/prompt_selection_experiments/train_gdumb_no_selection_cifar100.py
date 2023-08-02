@@ -18,7 +18,7 @@ torch.cuda.set_per_process_memory_fraction(0.5)
 seed = 42
 
 
-text_logger = TextLogger(open("logs/log_offline_l2p.txt", "a"))
+text_logger = TextLogger(open("logs/log_gdumb_no_selection.txt", "a"))
 interactive_logger = InteractiveLogger()
 
 eval_plugin = EvaluationPlugin(
@@ -29,11 +29,12 @@ eval_plugin = EvaluationPlugin(
 )
 
 early_stop = EarlyStoppingPlugin(
-    patience=1,
-    val_stream_name="valid_stream",
+    patience=2,
+    val_stream_name="val_stream",
     verbose=True,
+    mode="min",
+    metric_name="Loss_Stream"
 )
-
 
 train_transform = transforms.Compose(
     [
@@ -101,14 +102,15 @@ strategy = ViTGDumb(
 )
 
 
-# print(strategy.model)
-count_parameters(strategy.model)
+train_stream = benchmark.train_stream
+valid_stream = benchmark.valid_stream
+test_stream = benchmark.test_stream
 
 results = []
-for train_experience, valid_experience in zip(benchmark.train_stream, benchmark.valid_stream):
-    print("Start of experience: ", train_experience.current_experience)
-    print("Current Classes: ", train_experience.classes_in_this_experience)
-    strategy.train(train_experience, eval_streams=[valid_experience])
-    # strategy.eval()
-    # strategy.eval(benchmark.valid_stream[t])
-results.append(strategy.eval(benchmark.test_stream))
+for t, (train_exp, valid_exp) in enumerate(zip(train_stream, valid_stream)):
+    print("Start of experience: ", train_exp.current_experience)
+    print("Current Classes: ", train_exp.classes_in_this_experience)
+    strategy.train(train_exp, eval_streams=[valid_exp])
+    results.append(strategy.eval(benchmark.test_stream[:t+1]))
+
+torch.save(strategy.model, "./../../checkpoints/knn_l2p_cifar100.pt")

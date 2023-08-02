@@ -6,6 +6,11 @@ from vit_der import ViTDER
 from avalanche.benchmarks import SplitCIFAR100, SplitCIFAR10
 from torch.nn import CrossEntropyLoss
 from utils import count_parameters
+from avalanche.training.plugins import EvaluationPlugin
+from avalanche.logging import InteractiveLogger, TextLogger
+from avalanche.evaluation.metrics import accuracy_metrics, loss_metrics, forgetting_metrics
+from avalanche.benchmarks.generators import benchmark_with_validation_stream
+from avalanche.training.plugins.early_stopping import EarlyStoppingPlugin
 
 train_transform = transforms.Compose(
     [
@@ -25,9 +30,29 @@ eval_transform = transforms.Compose(
     ]
 )
 
+
+text_logger = TextLogger(open("logs/knn_l2p.txt", "a"))
+interactive_logger = InteractiveLogger()
+
+eval_plugin = EvaluationPlugin(
+    accuracy_metrics(epoch=True, experience=True, stream=True),
+    loss_metrics(epoch=True, experience=True, stream=True),
+    forgetting_metrics(experience=True, stream=True),
+    loggers=[interactive_logger, text_logger],
+)
+
+early_stop = EarlyStoppingPlugin(
+    patience=2,
+    val_stream_name="val_stream",
+    verbose=True,
+    mode="min",
+    metric_name="Loss_Stream"
+)
+
+
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # device="cpu"
-num_classes=10
+num_classes=100
 
 if num_classes == 10:
     benchmark = SplitCIFAR10(
@@ -47,6 +72,8 @@ else:
         train_transform=train_transform,
         eval_transform=eval_transform
     )
+
+benchmark = benchmark_with_validation_stream(benchmark, 0.05, shuffle=True)
 
 strategy = ViTDER(
     model_name="vit_tiny_patch16_224",
@@ -69,9 +96,15 @@ strategy = ViTDER(
 
 count_parameters(strategy.model)
 
+train_stream = benchmark.train_stream
+valid_stream = benchmark.valid_stream
+test_stream = benchmark.test_stream
+
 results = []
-for experience in benchmark.train_stream:
-    print("Start of experience: ", experience.current_experience)
-    print("Current Classes: ", experience.classes_in_this_experience)
-    strategy.train(experience)
-results.append(strategy.eval(benchmark.test_stream))
+for t, (train_exp, valid_exp) in enumerate(zip(train_stream, valid_stream)):
+    print("Start of experience: ", train_exp.current_experience)
+    print("Current Classes: ", train_exp.classes_in_this_experience)
+    strategy.train(train_exp, eval_streams=[valid_exp])
+    results.append(strategy.eval(benchmark.test_stream[:t+1]))
+
+torch.save(strategy.model, "./../../checkpoints/knn_l2p_cifar100.pt")

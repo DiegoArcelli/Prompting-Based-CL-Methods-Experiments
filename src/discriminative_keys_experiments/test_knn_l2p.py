@@ -53,7 +53,8 @@ if num_classes == 10:
         fixed_class_order=[c for c in range(num_classes)],
         return_task_id=False,
         train_transform=train_transform,
-        eval_transform=eval_transform
+        eval_transform=eval_transform,
+        shuffle=True
     )
 else:
     benchmark = SplitCIFAR100(
@@ -62,15 +63,16 @@ else:
         fixed_class_order=[c for c in range(num_classes)],
         return_task_id=False,
         train_transform=train_transform,
-        eval_transform=eval_transform
+        eval_transform=eval_transform,
+        shuffle=True
     )
 
 
 model = torch.load("./../../checkpoints/knn_l2p_tiny_cifar100.pt")
 
 strategy = KNNLearningToPrompt(
-            model=None,
-            model_name='vit_base_patch16_224',
+            model=model,
+            model_name='vit_tiny_patch16_224',
             criterion=CrossEntropyLoss(),
             train_mb_size=16,
             eval_mb_size=16,
@@ -99,6 +101,7 @@ strategy = KNNLearningToPrompt(
             k=3,
             seed=seed,
             evaluator=eval_plugin,
+            predict_task=True
             # eval_every=1
         )
 
@@ -108,6 +111,7 @@ strategy.switch_to_knn_mode()
 # compute key class mapping and use keys and knn classifier
 results = []
 for experience in benchmark.train_stream:
+    break   
     strategy.train(experience)
 
 for k in range(1, 11):

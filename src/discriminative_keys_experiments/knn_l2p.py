@@ -4,6 +4,7 @@ import torch
 from torch import nn
 from avalanche.training.supervised import LearningToPrompt
 from avalanche.training.templates import SupervisedTemplate
+from avalanche.training.templates.problem_type import SupervisedProblem
 from typing import Callable, Optional, List, Union
 from avalanche.training.plugins import SupervisedPlugin, EvaluationPlugin
 from avalanche.training.plugins.evaluation import EvaluationPlugin, default_evaluator
@@ -109,7 +110,7 @@ class KNNLearningToPrompt(LearningToPrompt):
             plugins,
             evaluator,
             eval_every,
-            peval_mode,
+            peval_mode
         )
 
         self._criterion = criterion
@@ -205,7 +206,7 @@ class KNNLearningToPrompt(LearningToPrompt):
             key_class_map = self.key_class_mapping()    
 
             if self.predict_task:
-                self.mb_y = self.mb_y // self.num_tasks
+                self.mbatch[1] = self.mbatch[1] // self.num_tasks
 
             classes = idx.detach().cpu().apply_(lambda x: key_class_map[x]).to(self.device) # (B, K)
 

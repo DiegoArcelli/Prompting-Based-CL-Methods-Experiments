@@ -3,6 +3,7 @@ from torchvision import transforms
 from avalanche.benchmarks import SplitCIFAR100, SplitCIFAR10
 from torch.nn import CrossEntropyLoss
 from knn_l2p import KNNLearningToPrompt
+from avalanche.training import LearningToPrompt
 from avalanche.training.plugins import EvaluationPlugin
 from avalanche.training.plugins.early_stopping import EarlyStoppingPlugin
 from avalanche.logging import InteractiveLogger, TextLogger
@@ -25,9 +26,11 @@ eval_plugin = EvaluationPlugin(
 )
 
 early_stop = EarlyStoppingPlugin(
-    patience=1,
+    patience=2,
     val_stream_name="val_stream",
     verbose=True,
+    mode="min",
+    metric_name="Loss_Stream"
 )
 
 train_transform = transforms.Compose(
@@ -76,14 +79,13 @@ else:
 
 benchmark = benchmark_with_validation_stream(benchmark, 0.05, shuffle=True)
 
-strategy = KNNLearningToPrompt(
-            model=None,
-            model_name='vit_base_patch16_224',
+strategy = LearningToPrompt(
+            model_name='vit_tiny_patch16_224',
             criterion=CrossEntropyLoss(),
             train_mb_size=16,
             eval_mb_size=16,
             device=device,
-            train_epochs=5,
+            train_epochs=1,
             num_classes=num_classes,
             prompt_pool=True,
             pool_size=10,
@@ -93,10 +95,10 @@ strategy = KNNLearningToPrompt(
             pretrained=True,
             embedding_key="cls",
             prompt_init="uniform",
-            batchwise_prompt=False,
+            batchwise_prompt=True,
             head_type="prompt",
             use_prompt_mask=False,
-            # train_mask=True,
+            train_mask=True,
             use_cls_features=True,
             use_mask=True,
             use_vit=True,
@@ -104,8 +106,6 @@ strategy = KNNLearningToPrompt(
             sim_coefficient = 0.1,
             drop_rate=0.0,
             drop_path_rate=0.0,
-            k=3,
-            seed=seed,
             evaluator=eval_plugin,
             plugins=[early_stop],
             eval_every=1
