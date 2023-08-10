@@ -198,9 +198,14 @@ class ViTDER(DER):
             not_mask = torch.tensor(not_mask, dtype=torch.int64).to(self.device)
             logits = logits.index_fill(dim=1, index=not_mask, value=float("-inf"))
 
-        return logits
+        return logits   
+    
 
-
+    def _before_backward(self, **kwargs):
+        self.loss -= self.sim_coefficient * self.res["reduce_sim"]
+        return super()._before_backward(**kwargs)
+    
+    
 class ClassBalancedBufferWithLogitsViT(ClassBalancedBufferWithLogits):
 
     def __init__(

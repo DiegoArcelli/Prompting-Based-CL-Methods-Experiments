@@ -12,6 +12,10 @@ from avalanche.logging import InteractiveLogger, TextLogger
 from avalanche.evaluation.metrics import accuracy_metrics, loss_metrics, forgetting_metrics
 from avalanche.benchmarks.generators import benchmark_with_validation_stream
 
+
+seed=42
+use_early_stop=False
+
 train_transform = transforms.Compose(
     [
         transforms.RandomCrop(32, padding=4),
@@ -50,31 +54,35 @@ early_stop = EarlyStoppingPlugin(
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # device="cpu"
-num_classes=100
+num_classes=10
 
 if num_classes == 10:
     benchmark = SplitCIFAR10(
         n_experiences=5,
-        seed=42,
+        seed=seed,
         fixed_class_order=[c for c in range(num_classes)],
         return_task_id=False,
         train_transform=train_transform,
-        eval_transform=eval_transform
+        eval_transform=eval_transform,
+        shuffle=True
     )
 else:
     benchmark = SplitCIFAR100(
         n_experiences=10,
-        seed=42,
+        seed=seed,
         fixed_class_order=[c for c in range(num_classes)],
         return_task_id=False,
         train_transform=train_transform,
-        eval_transform=eval_transform
+        eval_transform=eval_transform,
+        shuffle=True
     )
 
-benchmark = benchmark_with_validation_stream(benchmark, 0.05, shuffle=True)
+
+if use_early_stop:
+    benchmark = benchmark_with_validation_stream(benchmark, 0.05, shuffle=True)
 
 strategy = ViTER(
-    model_name="vit_tiny_patch16_224",
+    model_name="vit_base_patch16_224",
     criterion=CrossEntropyLoss(),
     mem_size=5000,
     train_epochs=5,
@@ -84,27 +92,32 @@ strategy = ViTER(
     prompt_pool=True,
     use_cls_features=False,
     prompt_selection=False,
+    batchwise_prompt=False,
+    use_mask=False,
     head_type="prompt",
     num_classes=num_classes,
     pool_size=10,
     prompt_length=5,
     top_k=10,
+    lr=0.001875,
     sim_coefficient=0,
     evaluator=eval_plugin,
-    plugins=[early_stop],
-    eval_every=1
+    plugins=[early_stop] if use_early_stop else None,
+    eval_every=1 if use_early_stop else -1
 )
 
-# print(strategy.model)
 count_parameters(strategy.model)
 
 train_stream = benchmark.train_stream
-valid_stream = benchmark.valid_stream
+valid_stream = benchmark.valid_stream if use_early_stop else [None for _ in train_stream]
 test_stream = benchmark.test_stream
 
 results = []
 for t, (train_exp, valid_exp) in enumerate(zip(train_stream, valid_stream)):
     print("Start of experience: ", train_exp.current_experience)
     print("Current Classes: ", train_exp.classes_in_this_experience)
-    strategy.train(train_exp, eval_streams=[valid_exp])
+    if use_early_stop:
+        strategy.train(train_exp, eval_streams=[valid_exp])
+    else:
+        strategy.train(train_exp)
     results.append(strategy.eval(benchmark.test_stream[:t+1]))

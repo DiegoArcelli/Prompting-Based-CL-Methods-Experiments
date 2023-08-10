@@ -33,12 +33,12 @@ eval_transform = transforms.Compose(
     ]
 )
 
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # device = "cpu"
 
 num_classes = 100
 
-text_logger = TextLogger(open("logs/log_l2p_offline.txt", "a"))
+text_logger = TextLogger(open("logs/log_l2p_offline_selection.txt", "a"))
 interactive_logger = InteractiveLogger()
 
 eval_plugin = EvaluationPlugin(
@@ -78,10 +78,10 @@ else:
 benchmark = benchmark_with_validation_stream(benchmark, 0.05, shuffle=True)
 
 strategy = LearningToPrompt(
-            model_name='vit_base_patch16_224',#"simpleMLP",
+            model_name='vit_base_patch16_224',
             criterion=CrossEntropyLoss(),
             train_mb_size=16,
-            eval_mb_size=8,
+            eval_mb_size=16,
             device=device,
             train_epochs=10,
             num_classes=num_classes,
@@ -114,6 +114,4 @@ for train_experience, valid_experience in zip(benchmark.train_stream, benchmark.
     print("Start of experience: ", train_experience.current_experience)
     print("Current Classes: ", train_experience.classes_in_this_experience)
     strategy.train(train_experience, eval_streams=[valid_experience])
-    # strategy.eval()
-    # strategy.eval(benchmark.valid_stream[t])
 results.append(strategy.eval(benchmark.test_stream))

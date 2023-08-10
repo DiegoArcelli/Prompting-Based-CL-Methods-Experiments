@@ -7,6 +7,7 @@ from torch.nn import CrossEntropyLoss
 from avalanche.training.plugins import SupervisedPlugin, EvaluationPlugin
 from avalanche.training.plugins.evaluation import EvaluationPlugin, default_evaluator
 from avalanche.models.vit import create_model
+from avalanche.models.utils import avalanche_forward
 import numpy as np
 
 from typing import (
@@ -175,3 +176,60 @@ class ViTER(ER_ACE):
             logits = logits.index_fill(dim=1, index=not_mask, value=float("-inf"))
 
         return logits
+    
+    def training_epoch(self, **kwargs):
+        """Training epoch.
+
+        :param kwargs:
+        :return:
+        """
+        for self.mbatch in self.dataloader:
+            if self._stop_training:
+                break
+
+            self._unpack_minibatch()
+            self._before_training_iteration(**kwargs)
+
+            if self.replay_loader is not None:
+                self.mb_buffer_x, self.mb_buffer_y, self.mb_buffer_tid = next(
+                    self.replay_loader
+                )
+                self.mb_buffer_x, self.mb_buffer_y, self.mb_buffer_tid = (
+                    self.mb_buffer_x.to(self.device),
+                    self.mb_buffer_y.to(self.device),
+                    self.mb_buffer_tid.to(self.device),
+                )
+
+            self.optimizer.zero_grad()
+            self.loss = self._make_empty_loss()
+
+            # Forward
+            self._before_forward(**kwargs)
+            self.mb_output = self.forward()
+            if self.replay_loader is not None:
+                self.mb_buffer_out = avalanche_forward(
+                    self.model, self.mb_buffer_x, self.mb_buffer_tid
+                )
+            self._after_forward(**kwargs)
+
+            # Loss & Backward
+            if self.replay_loader is None:
+                self.loss += self.criterion()
+            else:
+                self.loss += self.ace_criterion(
+                    self.mb_output,
+                    self.mb_y,
+                    self.mb_buffer_out["logits"],
+                    self.mb_buffer_y,
+                )
+
+            self._before_backward(**kwargs)
+            self.backward()
+            self._after_backward(**kwargs)
+
+            # Optimization step
+            self._before_update(**kwargs)
+            self.optimizer_step()
+            self._after_update(**kwargs)
+
+            self._after_training_iteration(**kwargs)

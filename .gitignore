@@ -2,3 +2,4 @@
 __pycache__
 data/
 checkpoints/*.pt
+checkpoints/*.pth

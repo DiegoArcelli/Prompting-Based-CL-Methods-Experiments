@@ -15,6 +15,7 @@ from avalanche.training.plugins.early_stopping import EarlyStoppingPlugin
 torch.cuda.set_per_process_memory_fraction(0.5)
 
 seed = 42
+use_early_stop = False
 
 text_logger = TextLogger(open("logs/log_gdumb_selection.txt", "a"))
 interactive_logger = InteractiveLogger()
@@ -59,7 +60,7 @@ num_classes=100
 if num_classes == 10:
     benchmark = SplitCIFAR10(
         n_experiences=5,
-        seed=42,
+        seed=seed,
         fixed_class_order=[c for c in range(num_classes)],
         return_task_id=False,
         train_transform=train_transform,
@@ -69,7 +70,7 @@ if num_classes == 10:
 else:
     benchmark = SplitCIFAR100(
         n_experiences=10,
-        seed=42,
+        seed=seed,
         fixed_class_order=[c for c in range(num_classes)],
         return_task_id=False,
         train_transform=train_transform,
@@ -77,7 +78,8 @@ else:
         shuffle=True
     )
 
-benchmark = benchmark_with_validation_stream(benchmark, 0.05, shuffle=True)
+if use_early_stop:
+    benchmark = benchmark_with_validation_stream(benchmark, 0.05, shuffle=True)
 
 strategy = ViTGDumb(
     model_name="vit_base_patch16_224",
@@ -100,25 +102,28 @@ strategy = ViTGDumb(
     batchwise_prompt=False,
     head_type="prompt",
     use_prompt_mask=False,
-    # train_mask=True,
     use_cls_features=True,
     use_mask=False,
     use_vit=True,
-    lr = 0.03,
+    lr=0.001875,
     sim_coefficient = 0.1,
     drop_rate=0.0,
     drop_path_rate=0.0,
     evaluator=eval_plugin,
-    plugins=[early_stop],
-    eval_every=1
+    plugins=[early_stop] if use_early_stop else None,
+    eval_every=1 if use_early_stop else -1
 )
+
 train_stream = benchmark.train_stream
-valid_stream = benchmark.valid_stream
+valid_stream = benchmark.valid_stream if use_early_stop else [None for _ in train_stream]
 test_stream = benchmark.test_stream
 
 results = []
 for t, (train_exp, valid_exp) in enumerate(zip(train_stream, valid_stream)):
     print("Start of experience: ", train_exp.current_experience)
     print("Current Classes: ", train_exp.classes_in_this_experience)
-    strategy.train(train_exp, eval_streams=[valid_exp])
+    if use_early_stop:
+        strategy.train(train_exp, eval_streams=[valid_exp])
+    else:
+        strategy.train(train_exp)
     results.append(strategy.eval(benchmark.test_stream[:t+1]))

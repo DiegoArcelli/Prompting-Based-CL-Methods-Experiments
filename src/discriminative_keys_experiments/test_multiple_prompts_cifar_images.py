@@ -14,25 +14,29 @@ def get_class_images(dataset, _class):
 
 transform = transforms.Compose([
     transforms.Resize(224),
-    transforms.PILToTensor(),
-    transforms.Lambda(lambda x: x.float()),
+    transforms.ToTensor(), 
     transforms.Normalize((0.5071, 0.4865, 0.4409), (0.2673, 0.2564, 0.2762)),
 ])
 
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 n_classes = 100
 
-model = torch.load("./../../checkpoints/knn_l2p_tiny_cifar100.pt")
+model = torch.load("./../../checkpoints/l2p_cifar100_repo.pt")
 model = model.to(device)
 model.eval()
 
 dataset = CIFAR100("./../data/", train=False, download=True)
 # val_loader = DataLoader(dataset, batch_size=batch_size)
 
-n_images = 20
-batch_size = 4
-ref_class = 0
+
+if len(sys.argv) > 1:
+    ref_class = int(sys.argv[1])
+else:
+    ref_class = 0
+
+n_images = 128
+batch_size = 16
 pool_size = 10
 
 prompts = list(itertools.combinations([x for x in range(pool_size)], 5))
