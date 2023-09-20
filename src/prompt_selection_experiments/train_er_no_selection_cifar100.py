@@ -54,7 +54,7 @@ early_stop = EarlyStoppingPlugin(
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # device="cpu"
-num_classes=10
+num_classes=100
 
 if num_classes == 10:
     benchmark = SplitCIFAR10(

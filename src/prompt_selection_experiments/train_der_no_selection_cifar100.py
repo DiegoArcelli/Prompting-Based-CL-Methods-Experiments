@@ -2,7 +2,7 @@ import sys
 sys.path.append("./../")
 import torch
 from torchvision import transforms
-from vit_gdumb import ViTGDumb
+from vit_der import ViTDER
 from avalanche.benchmarks import SplitCIFAR100, SplitCIFAR10
 from torch.nn import CrossEntropyLoss
 from utils import count_parameters
@@ -12,28 +12,9 @@ from avalanche.evaluation.metrics import accuracy_metrics, loss_metrics, forgett
 from avalanche.benchmarks.generators import benchmark_with_validation_stream
 from avalanche.training.plugins.early_stopping import EarlyStoppingPlugin
 
-torch.cuda.set_per_process_memory_fraction(0.5)
 
-seed = 42
+seed=42
 use_early_stop = False
-
-text_logger = TextLogger(open("logs/log_gdumb_selection.txt", "a"))
-interactive_logger = InteractiveLogger()
-
-eval_plugin = EvaluationPlugin(
-    accuracy_metrics(epoch=True, experience=True, stream=True),
-    loss_metrics(epoch=True, experience=True, stream=True),
-    forgetting_metrics(experience=True, stream=True),
-    loggers=[interactive_logger, text_logger],
-)
-
-early_stop = EarlyStoppingPlugin(
-    patience=2,
-    val_stream_name="valid_stream",
-    verbose=True,
-    mode="min",
-    metric_name="Loss_Stream"
-)
 
 train_transform = transforms.Compose(
     [
@@ -53,9 +34,29 @@ eval_transform = transforms.Compose(
     ]
 )
 
+
+text_logger = TextLogger(open("logs/log_der_selection.txt", "a"))
+interactive_logger = InteractiveLogger()
+
+eval_plugin = EvaluationPlugin(
+    accuracy_metrics(epoch=True, experience=True, stream=True),
+    loss_metrics(epoch=True, experience=True, stream=True),
+    forgetting_metrics(experience=True, stream=True),
+    loggers=[interactive_logger, text_logger],
+)
+
+early_stop = EarlyStoppingPlugin(
+    patience=2,
+    val_stream_name="valid_stream",
+    verbose=True,
+    mode="min",
+    metric_name="Loss_Stream"
+)
+
+
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # device="cpu"
-num_classes=100
+num_classes=10
 
 if num_classes == 10:
     benchmark = SplitCIFAR10(
@@ -81,7 +82,7 @@ else:
 if use_early_stop:
     benchmark = benchmark_with_validation_stream(benchmark, 0.05, shuffle=True)
 
-strategy = ViTGDumb(
+strategy = ViTDER(
     model_name="vit_base_patch16_224",
     criterion=CrossEntropyLoss(),
     mem_size=5000,
@@ -89,30 +90,23 @@ strategy = ViTGDumb(
     train_mb_size=16,
     eval_mb_size=16,
     device=device,
-    num_classes=num_classes,
-    prompt_selection=True,
     prompt_pool=True,
-    pool_size=10,
-    prompt_length=5,
-    top_k=5,
-    prompt_key=True,
-    pretrained=True,
-    embedding_key="cls",
-    prompt_init="uniform",
+    use_cls_features=False,
+    prompt_selection=False,
     batchwise_prompt=False,
     head_type="prompt",
-    use_prompt_mask=True,
-    use_cls_features=True,
-    use_mask=False,
-    use_vit=True,
+    num_classes=num_classes,
+    pool_size=10,
+    prompt_length=5,
+    top_k=10,
+    sim_coefficient=0,
     lr=0.001875,
-    sim_coefficient = 0.1,
-    drop_rate=0.0,
-    drop_path_rate=0.0,
     evaluator=eval_plugin,
     plugins=[early_stop] if use_early_stop else None,
     eval_every=1 if use_early_stop else -1
 )
+
+count_parameters(strategy.model)
 
 train_stream = benchmark.train_stream
 valid_stream = benchmark.valid_stream if use_early_stop else [None for _ in train_stream]

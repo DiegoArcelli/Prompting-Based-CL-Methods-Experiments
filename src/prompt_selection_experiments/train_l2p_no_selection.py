@@ -1,23 +1,24 @@
-import sys
-sys.path.append("./../")
 import torch
 from torchvision import transforms
-from vit_gdumb import ViTGDumb
 from avalanche.benchmarks import SplitCIFAR100, SplitCIFAR10
 from torch.nn import CrossEntropyLoss
-from utils import count_parameters
+from avalanche.training import LearningToPrompt
 from avalanche.training.plugins import EvaluationPlugin
+from avalanche.training.plugins.early_stopping import EarlyStoppingPlugin
 from avalanche.logging import InteractiveLogger, TextLogger
 from avalanche.evaluation.metrics import accuracy_metrics, loss_metrics, forgetting_metrics
 from avalanche.benchmarks.generators import benchmark_with_validation_stream
-from avalanche.training.plugins.early_stopping import EarlyStoppingPlugin
+
+use_early_stop = False
+num_classes = 100
+lr = 0.03
+batch_size = 2
 
 torch.cuda.set_per_process_memory_fraction(0.5)
-
+# os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 seed = 42
-use_early_stop = False
 
-text_logger = TextLogger(open("logs/log_gdumb_selection.txt", "a"))
+text_logger = TextLogger(open("logs/log_l2p_no_selection.txt", "a"))
 interactive_logger = InteractiveLogger()
 
 eval_plugin = EvaluationPlugin(
@@ -54,8 +55,9 @@ eval_transform = transforms.Compose(
 )
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-# device="cpu"
-num_classes=100
+# device = "cpu"
+
+lr = lr*batch_size/256.0
 
 if num_classes == 10:
     benchmark = SplitCIFAR10(
@@ -78,35 +80,35 @@ else:
         shuffle=True
     )
 
+
 if use_early_stop:
     benchmark = benchmark_with_validation_stream(benchmark, 0.05, shuffle=True)
 
-strategy = ViTGDumb(
-    model_name="vit_base_patch16_224",
+
+strategy = LearningToPrompt(
+    model_name='vit_base_patch16_224',
     criterion=CrossEntropyLoss(),
-    mem_size=5000,
-    train_epochs=5,
-    train_mb_size=16,
-    eval_mb_size=16,
+    train_mb_size=batch_size,
+    eval_mb_size=batch_size,
     device=device,
+    train_epochs=5,
     num_classes=num_classes,
-    prompt_selection=True,
     prompt_pool=True,
     pool_size=10,
     prompt_length=5,
-    top_k=5,
+    top_k=10,
     prompt_key=True,
     pretrained=True,
     embedding_key="cls",
     prompt_init="uniform",
-    batchwise_prompt=False,
+    batchwise_prompt=True,
     head_type="prompt",
-    use_prompt_mask=True,
+    use_prompt_mask=False,
     use_cls_features=True,
-    use_mask=False,
+    use_mask=True,
     use_vit=True,
-    lr=0.001875,
-    sim_coefficient = 0.1,
+    lr = lr,
+    sim_coefficient = 0.0,
     drop_rate=0.0,
     drop_path_rate=0.0,
     evaluator=eval_plugin,
@@ -127,3 +129,5 @@ for t, (train_exp, valid_exp) in enumerate(zip(train_stream, valid_stream)):
     else:
         strategy.train(train_exp)
     results.append(strategy.eval(benchmark.test_stream[:t+1]))
+
+torch.save(strategy.model, "./../../checkpoints/l2p_cifar100_no_selection.pt")

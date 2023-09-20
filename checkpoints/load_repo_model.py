@@ -9,7 +9,7 @@ num_classes=100
 
 model_name="vit_base_patch16_224"
 prompt_pool=True
-pool_size=10
+pool_size=100
 prompt_length=5
 top_k=5
 prompt_key=True
@@ -42,4 +42,4 @@ model = create_model(
 )
 model.load_state_dict(checkpoint["model"])
 
-torch.save(model, "l2p_cifar100_repo.pt")
+torch.save(model, "l2p_100_cifar100_repo.pt")
