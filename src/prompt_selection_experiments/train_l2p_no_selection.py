@@ -12,7 +12,7 @@ from avalanche.benchmarks.generators import benchmark_with_validation_stream
 use_early_stop = False
 num_classes = 100
 lr = 0.03
-batch_size = 2
+batch_size = 16
 
 torch.cuda.set_per_process_memory_fraction(0.5)
 # os.environ["CUDA_VISIBLE_DEVICES"] = "3"

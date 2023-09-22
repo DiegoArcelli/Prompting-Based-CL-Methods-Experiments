@@ -36,23 +36,20 @@ early_stop = EarlyStoppingPlugin(
     metric_name="Loss_Stream"
 )
 
-train_transform = transforms.Compose(
-    [
-        transforms.RandomCrop(32, padding=4),
-        transforms.RandomHorizontalFlip(),
-        transforms.Resize(224),
-        transforms.ToTensor(),
-        transforms.Normalize((0.5071, 0.4865, 0.4409), (0.2673, 0.2564, 0.2762)),
-    ]
-)
+scale = (0.05, 1.0)
+ratio = (3. / 4., 4. / 3.)
+train_transform = transforms.Compose([
+    transforms.RandomResizedCrop(224, scale=scale, ratio=ratio),
+    transforms.RandomHorizontalFlip(p=0.5),
+    transforms.ToTensor(),
+])
 
-eval_transform = transforms.Compose(
-    [
-        transforms.Resize(224),
-        transforms.ToTensor(),
-        transforms.Normalize((0.5071, 0.4865, 0.4409), (0.2673, 0.2564, 0.2762)),
-    ]
-)
+size = int((256 / 224) * 224)
+eval_transform = transforms.Compose([
+    transforms.Resize(size, interpolation=3),
+    transforms.CenterCrop(224),
+    transforms.ToTensor()
+])
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # device = "cpu"
