@@ -4,10 +4,11 @@ import torch
 from torch import nn
 from avalanche.training.supervised import GDumb
 from torch.nn import CrossEntropyLoss
-from avalanche.training.plugins import SupervisedPlugin, EvaluationPlugin
+from avalanche.training.plugins import SupervisedPlugin, EvaluationPlugin, GDumbPlugin
 from avalanche.training.plugins.evaluation import EvaluationPlugin, default_evaluator
 from avalanche.models.vit import create_model
 import numpy as np
+from functools import reduce
 
 from typing import (
     Callable,
@@ -165,7 +166,9 @@ class ViTGDumb(GDumb):
         logits = self.res["logits"]
 
         if self.use_mask and self.is_training:
-            mask = self.experience.classes_in_this_experience
+            gdumb_plugin = list(filter(lambda plugin: type(plugin) == GDumbPlugin, self.plugins))[0]
+            # mask = self.experience.classes_in_this_experience
+            mask = list(gdumb_plugin.storage_policy.seen_classes)
             not_mask = np.setdiff1d(np.arange(self.num_classes), mask)
             not_mask = torch.tensor(not_mask, dtype=torch.int64).to(self.device)
             logits = logits.index_fill(dim=1, index=not_mask, value=float("-inf"))
@@ -177,3 +180,6 @@ class ViTGDumb(GDumb):
         loss = self._criterion(self.mb_output, self.mb_y)
         loss = loss - self.sim_coefficient * self.res["reduce_sim"]
         return loss
+
+    def _after_backward(self, **kwargs):
+        torch.nn.utils.clip_grad_norm_(self.model.parameters(), 1.0)

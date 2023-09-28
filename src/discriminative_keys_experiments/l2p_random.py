@@ -8,7 +8,7 @@ from avalanche.training.templates.problem_type import SupervisedProblem
 from typing import Callable, Optional, List, Union
 from avalanche.training.plugins import SupervisedPlugin, EvaluationPlugin
 from avalanche.training.plugins.evaluation import EvaluationPlugin, default_evaluator
-from avalanche.models.vit import create_model
+# from avalanche.models.vit import create_model
 import numpy as np
 from functools import reduce
 import torch.nn.functional as F
@@ -16,8 +16,15 @@ from timm.models.layers import PatchEmbed
 from timm.models.vision_transformer import Block
 from avalanche.models.timm_vit import ViTWithPrompt
 from avalanche.models import Prompt
+from avalanche.models.timm_vit import checkpoint_filter_fn
+from timm.models.helpers import (
+    adapt_input_conv,
+    checkpoint_seq,
+    resolve_pretrained_cfg,
+    build_model_with_cfg,
+)
 
-class RandomLearningToPrompt(LearningToPrompt):
+class RandomLearningToPrompt(SupervisedTemplate):
 
     def __init__(
         self,
@@ -156,7 +163,6 @@ class RandomLearningToPrompt(LearningToPrompt):
             self.res["logits"] = self.model(x=self.mb_x)
             self.res["reduce_sim"] = 0
 
-        print(self.res["prompt_idx"])
         logits = self.res["logits"]
 
         if self.use_mask and self.is_training:
@@ -170,6 +176,9 @@ class RandomLearningToPrompt(LearningToPrompt):
     def criterion(self):
         loss = self._criterion(self.mb_output, self.mb_y)
         return loss
+    
+    def _after_backward(self, **kwargs):
+        torch.nn.utils.clip_grad_norm_(self.model.parameters(), 1.0)
 
 
 class ViTWithRandomPrompt(ViTWithPrompt):
@@ -295,40 +304,19 @@ class RandomPrompt(Prompt):
         prompt_key_init="uniform",
         random_prompt=True
     ):
-        super().__init__()
-
-        self.length = length
-        self.embed_dim = embed_dim
-        self.prompt_pool = prompt_pool
-        self.embedding_key = embedding_key
-        self.prompt_init = prompt_init
-        self.prompt_key = prompt_key
-        self.pool_size = pool_size
-        self.top_k = top_k
-        self.batchwise_prompt = batchwise_prompt
         self.random_prompt = random_prompt
-
-        if self.prompt_pool:
-            prompt_pool_shape = (pool_size, length, embed_dim)
-            if prompt_init == "zero":
-                self.prompt = nn.Parameter(torch.zeros(prompt_pool_shape))
-            elif prompt_init == "uniform":
-                self.prompt = nn.Parameter(torch.randn(prompt_pool_shape))
-                nn.init.uniform_(self.prompt, -1, 1)
-
-        # if using learnable prompt keys
-        if prompt_key:
-            key_shape = (pool_size, embed_dim)
-            if prompt_key_init == "zero":
-                self.prompt_key = nn.Parameter(torch.zeros(key_shape))
-            elif prompt_key_init == "uniform":
-                self.prompt_key = nn.Parameter(torch.randn(key_shape))
-                nn.init.uniform_(self.prompt_key, -1, 1)
-        else:
-            # else use mean of prompt as key
-            # only compatible with prompt, not prefix
-            prompt_mean = torch.mean(self.prompt, dim=1)
-            self.prompt_key = prompt_mean
+        super().__init__(
+            length=length,
+            embed_dim=embed_dim,
+            embedding_key=embedding_key,
+            prompt_init=prompt_init,
+            prompt_pool=prompt_pool,
+            prompt_key=prompt_key,
+            pool_size=pool_size,
+            top_k=top_k,
+            batchwise_prompt=batchwise_prompt,
+            prompt_key_init=prompt_key_init,
+        )
 
     def forward(self, x_embed, prompt_mask=None, cls_features=None):
         """
@@ -338,7 +326,7 @@ class RandomPrompt(Prompt):
             cls_features: key features to find the close prompts
         """
         out = dict()
-        if self.prompt_pool:
+        if self.prompt_pool and not self.random_prompt:
             if self.embedding_key == "mean":
                 x_embed_mean = torch.mean(x_embed, dim=1)
             elif self.embedding_key == "max":
@@ -425,19 +413,19 @@ class RandomPrompt(Prompt):
 
             out["reduce_sim"] = reduce_sim
         elif self.random_prompt:
+            batch_size, _, _ = x_embed.shape
             if self.batchwise_prompt:
                 prompt_ids = np.random.choice(range(self.pool_size), self.top_k, replace=False)
                 prompt_ids = np.expand_dims(prompt_ids, 0)
                 prompt_ids = np.repeat(prompt_ids, batch_size, axis=0)
             else:
-                prompt_ids = np.zeros((batch_size, top_k))
+                prompt_ids = np.zeros((batch_size, self.top_k))
                 prompt_ids = np.apply_along_axis(lambda _: np.random.choice(range(self.pool_size), self.top_k, replace=False), 1, prompt_ids)
             prompt_ids = torch.from_numpy(prompt_ids)
-            batched_prompt_raw = self.prompt[prompt_ids]  # B, top_k, length, C
-            batch_size, top_k, length, c = batched_prompt_raw.shape
-            batched_prompt = batched_prompt_raw.reshape(
-                batch_size, top_k * length, c
-            )  # B, top_k * length, C
+            batched_prompt_raw = self.prompt[prompt_ids]
+
+            _, _, length, c = batched_prompt_raw.shape
+            batched_prompt = batched_prompt_raw.reshape(batch_size, self.top_k * length, c) 
             out["prompt_idx"] = prompt_ids
         else:
             if self.prompt_init == "zero":
@@ -453,3 +441,44 @@ class RandomPrompt(Prompt):
         out["prompted_embedding"] = torch.cat([batched_prompt, x_embed], dim=1)
 
         return out
+
+
+def _create_vision_transformer(variant, pretrained=False, **kwargs):
+    if kwargs.get("features_only", None):
+        raise RuntimeError(
+            "features_only not implemented for \
+                            Vision Transformer models."
+        )
+
+    pretrained_cfg = resolve_pretrained_cfg(
+        variant, pretrained_cfg=kwargs.pop("pretrained_cfg", None)
+    )
+
+    model = build_model_with_cfg(
+        ViTWithRandomPrompt,
+        variant,
+        pretrained,
+        pretrained_cfg=pretrained_cfg,
+        pretrained_filter_fn=checkpoint_filter_fn,
+        pretrained_custom_load="npz" in pretrained_cfg["url"],
+        **kwargs,
+    )
+    return model
+
+
+def vit_base_patch16_224(pretrained=True, **kwargs):
+    """ViT-Base (ViT-B/16) from original paper
+    (https://arxiv.org/abs/2010.11929).
+    ImageNet-1k weights fine-tuned from in21k @ 224x224,
+    source https://github.com/google-research/vision_transformer.
+    """
+    model_kwargs = dict(patch_size=16, embed_dim=768, depth=12, num_heads=12, **kwargs)
+    model = _create_vision_transformer(
+        "vit_base_patch16_224", pretrained=pretrained, **model_kwargs
+    )
+    return model
+
+
+def create_model(model_name="", **kwargs):
+    get_model = globals()[model_name]
+    return get_model(**kwargs)

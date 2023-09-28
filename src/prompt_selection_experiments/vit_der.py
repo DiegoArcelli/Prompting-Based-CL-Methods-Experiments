@@ -193,7 +193,7 @@ class ViTDER(DER):
         logits = self.res["logits"]
 
         if self.use_mask and self.is_training:
-            mask = self.experience.classes_in_this_experience
+            mask = list(self.storage_policy.seen_classes)
             not_mask = np.setdiff1d(np.arange(self.num_classes), mask)
             not_mask = torch.tensor(not_mask, dtype=torch.int64).to(self.device)
             logits = logits.index_fill(dim=1, index=not_mask, value=float("-inf"))
@@ -204,6 +204,9 @@ class ViTDER(DER):
     def _before_backward(self, **kwargs):
         self.loss -= self.sim_coefficient * self.res["reduce_sim"]
         return super()._before_backward(**kwargs)
+
+    def _after_backward(self, **kwargs):
+        torch.nn.utils.clip_grad_norm_(self.model.parameters(), 1.0)
     
     
 class ClassBalancedBufferWithLogitsViT(ClassBalancedBufferWithLogits):

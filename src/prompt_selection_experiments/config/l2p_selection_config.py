@@ -24,5 +24,5 @@ def get_args_parser(subparsers):
     subparsers.add_argument('--embedding_key', default='cls', type=str)
     subparsers.add_argument('--sim_coefficient', default=0.1, type=float)
     subparsers.add_argument('--eval_every', default=-1, type=int)
-    subparsers.add_argument('--early_stop', default=False, type=bool)
+    subparsers.add_argument('--use_early_stop', default=False, type=bool)
     subparsers.add_argument('--head_type', default='prompt', choices=['token', 'gap', 'prompt', 'token+prompt'], type=str, help='input type of classification head')

@@ -53,7 +53,7 @@ class KNNLearningToPrompt(LearningToPrompt):
         use_mask: bool = True,
         use_vit: bool = True,
         knn_mode: bool = False,
-        predict_task: bool = False,
+        predict_task: bool = True,
         **kwargs,
     ):
         

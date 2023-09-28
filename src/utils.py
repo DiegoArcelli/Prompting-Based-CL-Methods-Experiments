@@ -3,14 +3,16 @@ from avalanche.training import LearningToPrompt
 from prompt_selection_experiments.vit_er import ViTER
 from prompt_selection_experiments.vit_gdumb import ViTGDumb
 from prompt_selection_experiments.vit_der import ViTDER
-from torch.nn import CrossEntropyLoss
+from prompt_selection_experiments.l2p_task_wise import TaskWiseLearningToPrompt
+from prompt_selection_experiments.vit_clip import ClippedLearningToPrompt
 from prompt_selection_experiments.config import (
     l2p_no_selection_config,
     l2p_selection_config,
     l2p_offline_selection_config,
     l2p_offline_no_selection_config,
     reply_selection_config,
-    reply_no_selection_config
+    reply_no_selection_config,
+    l2p_task_wise
 )
 
 def count_parameters(model):
@@ -104,7 +106,7 @@ def l2p_forward(model, vit, x):
 
 def get_strategy_arguments(parser, strategy_name="l2p", selection=False):
 
-    assert strategy_name in ["l2p", "offline", "gdumb", "er", "der"]
+    assert strategy_name in ["l2p", "offline", "gdumb", "er", "der", "l2p_task_wise"]
 
     if strategy_name=="l2p" and selection:
         l2p_selection_config.get_args_parser(parser)
@@ -118,19 +120,22 @@ def get_strategy_arguments(parser, strategy_name="l2p", selection=False):
         reply_selection_config.get_args_parser(parser)
     elif strategy_name in ["gdumb", "er", "der"] and not selection:
         reply_no_selection_config.get_args_parser(parser)
-
+    elif strategy_name == "l2p_task_wise":
+        l2p_task_wise.get_args_parser(parser)
 
 def get_strategy(strategy_name="l2p", strategy_args=None):
 
-    assert strategy_name in ["l2p", "offline", "gdumb", "er", "der"]
+    assert strategy_name in ["l2p", "offline", "gdumb", "er", "der", "l2p_task_wise"]
     
     if strategy_name == "l2p" or strategy_name == "offline":
-        cl_strategy = LearningToPrompt
+        cl_strategy = ClippedLearningToPrompt
     elif strategy_name == "gdumb":
         cl_strategy = ViTGDumb
     elif strategy_name == "er":
         cl_strategy = ViTER
     elif strategy_name == "der":
         cl_strategy = ViTDER
+    elif strategy_name == "l2p_task_wise":
+        cl_strategy = TaskWiseLearningToPrompt
 
     return cl_strategy(**strategy_args)

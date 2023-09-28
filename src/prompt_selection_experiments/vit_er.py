@@ -142,6 +142,14 @@ class ViTER(ER_ACE):
             lr=self.lr,
         )
 
+    def _after_backward(self, **kwargs):
+        torch.nn.utils.clip_grad_norm_(self.model.parameters(), 1.0)
+
+    def criterion(self):
+        loss = self._criterion(self.mb_output, self.mb_y)
+        loss = loss - self.sim_coefficient * self.res["reduce_sim"]
+        return loss
+
     def forward(self):
         assert self.experience is not None
 
@@ -170,7 +178,10 @@ class ViTER(ER_ACE):
         logits = self.res["logits"]
 
         if self.use_mask and self.is_training:
-            mask = self.experience.classes_in_this_experience
+            if self.replay_loader is None:
+                mask = self.experience.classes_in_this_experience
+            else:
+                mask = list(self.storage_policy.seen_classes)
             not_mask = np.setdiff1d(np.arange(self.num_classes), mask)
             not_mask = torch.tensor(not_mask, dtype=torch.int64).to(self.device)
             logits = logits.index_fill(dim=1, index=not_mask, value=float("-inf"))
@@ -222,6 +233,7 @@ class ViTER(ER_ACE):
                     self.mb_buffer_out["logits"],
                     self.mb_buffer_y,
                 )
+                self.loss -= self.sim_coefficient * self.res["reduce_sim"]
 
             self._before_backward(**kwargs)
             self.backward()

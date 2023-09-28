@@ -2,9 +2,7 @@ import sys
 sys.path.append("./../")
 import torch
 from torchvision import transforms
-from avalanche.benchmarks import SplitCIFAR100, SplitCIFAR10
-from torch.nn import CrossEntropyLoss
-from avalanche.training import LearningToPrompt
+from avalanche.benchmarks import SplitCIFAR100
 from avalanche.training.plugins import EvaluationPlugin
 from avalanche.training.plugins.early_stopping import EarlyStoppingPlugin
 from avalanche.logging import InteractiveLogger, TextLogger
@@ -12,16 +10,28 @@ from avalanche.evaluation.metrics import accuracy_metrics, loss_metrics, forgett
 from avalanche.benchmarks.generators import benchmark_with_validation_stream
 import argparse
 from utils import get_strategy, get_strategy_arguments
+import random
+import numpy as np
 
 parser = argparse.ArgumentParser(prog='Train L2P', description='Train L2P based continual learning strategy')
-parser.add_argument('-sel', '--selection', action='store_true')
-parser.add_argument('-name', '--strategy_name', default="l2p", type=str)
+parser.add_argument('--selection', action='store_true')
+parser.add_argument('--strategy_name', default="l2p", type=str)
+parser.add_argument('--log_name', default=None, type=str)
+parser.add_argument('--checkpoint_name', default=None, type=str)
 
 args, _ = parser.parse_known_args()
 args = get_strategy_arguments(parser, args.strategy_name, args.selection)
 args = parser.parse_args()
 
-non_strategy_args = ["selection, strategy_name", "num_experiences"]
+
+seed = 42
+torch.manual_seed(seed)
+np.random.seed(seed)
+random.seed(seed)
+torch.cuda.set_per_process_memory_fraction(0.5)
+
+
+non_strategy_args = ["selection", "strategy_name", "num_experiences", "use_early_stop", "log_name", "checkpoint_name"]
 strategy_args = {arg: value for (arg, value) in args._get_kwargs() if arg not in non_strategy_args}
 
 use_early_stop = False
@@ -29,11 +39,11 @@ num_classes = 100
 lr = 0.03
 batch_size = 16
 
-torch.cuda.set_per_process_memory_fraction(0.5)
-# os.environ["CUDA_VISIBLE_DEVICES"] = "3"
-seed = 42
+if args.log_name is None:
+    log_name = f"log_l2p_{args.strategy_name}_{'selection' if args.selection else 'no_selection'}.txt"
+else:
+    log_name = args.log_name
 
-log_name = f"log_l2p_{args.strategy_name}_{'selection' if args.selection else 'no_selection'}.txt"
 text_logger = TextLogger(open(f"logs/{log_name}", "a"))
 interactive_logger = InteractiveLogger()
 
@@ -50,7 +60,7 @@ strategy_args["eval_mb_size"] = batch_size
 del strategy_args["batch_size"]
 
 
-if use_early_stop:
+if args.use_early_stop:
     early_stop = EarlyStoppingPlugin(
         patience=2,
         val_stream_name="valid_stream",
@@ -89,14 +99,14 @@ benchmark = SplitCIFAR100(
     n_experiences=args.num_experiences,
     seed=seed,
     fixed_class_order=[c for c in range(num_classes)],
-    return_task_id=False,
+    return_task_id=args.use_prompt_mask,
     train_transform=train_transform,
     eval_transform=eval_transform,
     shuffle=True
 )
 
 
-if use_early_stop:
+if args.use_early_stop:
     benchmark = benchmark_with_validation_stream(benchmark, 0.05, shuffle=True)
 
 print("Arguments:")
@@ -108,19 +118,23 @@ print("\n")
 strategy = get_strategy(strategy_name=args.strategy_name, strategy_args=strategy_args)
 
 train_stream = benchmark.train_stream
-valid_stream = benchmark.valid_stream if use_early_stop else [None for _ in train_stream]
+valid_stream = benchmark.valid_stream if args.use_early_stop else [None for _ in train_stream]
 test_stream = benchmark.test_stream
 
 results = []
 for t, (train_exp, valid_exp) in enumerate(zip(train_stream, valid_stream)):
     print("Start of experience: ", train_exp.current_experience)
     print("Current Classes: ", train_exp.classes_in_this_experience)
-    if use_early_stop:
+    if args.use_early_stop:
         strategy.train(train_exp, eval_streams=[valid_exp])
     else:
         strategy.train(train_exp)
     results.append(strategy.eval(benchmark.test_stream[:t+1]))
 
 
-ckpt_name = f"l2p_cifar100_{args.strategy_name}_{'selection' if args.selection else 'no_selection'}.pt"
+if args.checkpoint_name is None:
+    ckpt_name = f"l2p_cifar100_{args.strategy_name}_{'selection' if args.selection else 'no_selection'}.pt"
+else:
+    ckpt_name = args.checkpoint_name
+
 torch.save(strategy.model, f"./../../checkpoints/{ckpt_name}")
