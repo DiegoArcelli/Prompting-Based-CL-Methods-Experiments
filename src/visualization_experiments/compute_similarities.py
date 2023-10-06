@@ -1,11 +1,23 @@
+import sys
+sys.path.append("./../")
 import numpy as np
 import torch
+
+import argparse
+
+parser = argparse.ArgumentParser(prog='', description='')
+parser.add_argument('--repo', action="store_true")
+args = parser.parse_args()
 
 def sim(a, b):
     return np.dot(a,b)/(np.linalg.norm(a)*np.linalg.norm(b))
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model = torch.load("./../../checkpoints/l2p_cifar100_repo.pt")
+
+
+model_name = "l2p_cifar100_repo.pt" if args.repo else "l2p_cifar100_l2p_selection.pt"
+model_path = f"./../../checkpoints/{model_name}"
+model = torch.load(model_path)
 model = model.to(device)
 keys = model.prompt.prompt_key.detach().cpu().numpy()
 prompts = model.prompt.prompt.detach().cpu().numpy()

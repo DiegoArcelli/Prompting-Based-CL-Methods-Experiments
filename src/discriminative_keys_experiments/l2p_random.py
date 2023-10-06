@@ -176,9 +176,6 @@ class RandomLearningToPrompt(SupervisedTemplate):
     def criterion(self):
         loss = self._criterion(self.mb_output, self.mb_y)
         return loss
-    
-    def _after_backward(self, **kwargs):
-        torch.nn.utils.clip_grad_norm_(self.model.parameters(), 1.0)
 
 
 class ViTWithRandomPrompt(ViTWithPrompt):
@@ -326,68 +323,23 @@ class RandomPrompt(Prompt):
             cls_features: key features to find the close prompts
         """
         out = dict()
-        if self.prompt_pool and not self.random_prompt:
-            if self.embedding_key == "mean":
-                x_embed_mean = torch.mean(x_embed, dim=1)
-            elif self.embedding_key == "max":
-                x_embed_mean = torch.max(x_embed, dim=1)[0]
-            elif self.embedding_key == "mean_max":
-                x_embed_mean = torch.max(x_embed, dim=1)[0] + 2 * torch.mean(
-                    x_embed, dim=1
-                )
-            elif self.embedding_key == "cls":
-                if cls_features is None:
-                    x_embed_mean = torch.max(x_embed, dim=1)[0]  # B, C
-                else:
-                    x_embed_mean = cls_features
-            else:
-                raise NotImplementedError(
-                    "Not supported way of calculating embedding keys!"
-                )
+        if self.prompt_pool:
 
-            prompt_norm = self.l2_normalize(self.prompt_key, dim=1)  # Pool_size, C
-            x_embed_norm = self.l2_normalize(x_embed_mean, dim=1)  # B, C
-
-            similarity = torch.matmul(x_embed_norm, prompt_norm.t())  # B, Pool_size
-
-            if prompt_mask is None:
-                _, idx = torch.topk(similarity, k=self.top_k, dim=1)  # B, top_k
+            if self.random_prompt:
+                batch_size, _, _ = x_embed.shape
                 if self.batchwise_prompt:
-                    prompt_id, id_counts = torch.unique(
-                        idx, return_counts=True, sorted=True
-                    )
-                    # In jnp.unique, when the 'size' is specified and there are
-                    # fewer than the indicated number of elements,
-                    # the remaining elements will be filled with 'fill_value',
-                    # the default is the minimum value along the specified
-                    # dimension.
-                    # Unless dimension is specified, this will be flattend if it
-                    # is not already 1D.
-                    if prompt_id.shape[0] < self.pool_size:
-                        prompt_id = torch.cat(
-                            [
-                                prompt_id,
-                                torch.full(
-                                    (self.pool_size - prompt_id.shape[0],),
-                                    torch.min(idx.flatten()),
-                                    device=prompt_id.device,
-                                ),
-                            ]
-                        )
-                        id_counts = torch.cat(
-                            [
-                                id_counts,
-                                torch.full(
-                                    (self.pool_size - id_counts.shape[0],),
-                                    0,
-                                    device=id_counts.device,
-                                ),
-                            ]
-                        )
-                    _, major_idx = torch.topk(id_counts, k=self.top_k)  # top_k
-                    major_prompt_id = prompt_id[major_idx]  # top_k
-                    # expand to batch
-                    idx = major_prompt_id.expand(x_embed.shape[0], -1)  # B, top_k
+                    prompt_ids = np.random.choice(range(self.pool_size), self.top_k, replace=False)
+                    prompt_ids = np.expand_dims(prompt_ids, 0)
+                    prompt_ids = np.repeat(prompt_ids, batch_size, axis=0)
+                else:
+                    prompt_ids = np.zeros((batch_size, self.top_k))
+                    prompt_ids = np.apply_along_axis(lambda _: np.random.choice(range(self.pool_size), self.top_k, replace=False), 1, prompt_ids)
+                prompt_ids = torch.from_numpy(prompt_ids)
+                batched_prompt_raw = self.prompt[prompt_ids]
+
+                _, _, length, c = batched_prompt_raw.shape
+                batched_prompt = batched_prompt_raw.reshape(batch_size, self.top_k * length, c) 
+                idx = prompt_ids
             else:
                 idx = prompt_mask  # B, top_k
 
@@ -396,37 +348,7 @@ class RandomPrompt(Prompt):
             batched_prompt = batched_prompt_raw.reshape(
                 batch_size, top_k * length, c
             )  # B, top_k * length, C
-
             out["prompt_idx"] = idx
-
-            # Debugging, return sim as well
-            out["prompt_norm"] = prompt_norm
-            out["x_embed_norm"] = x_embed_norm
-            out["similarity"] = similarity
-
-            # Put pull_constraint loss calculation inside
-            batched_key_norm = prompt_norm[idx]  # B, top_k, C
-            out["selected_key"] = batched_key_norm
-            x_embed_norm = x_embed_norm.unsqueeze(1)  # B, 1, C
-            sim = batched_key_norm * x_embed_norm  # B, top_k, C
-            reduce_sim = torch.sum(sim) / x_embed.shape[0]  # Scalar
-
-            out["reduce_sim"] = reduce_sim
-        elif self.random_prompt:
-            batch_size, _, _ = x_embed.shape
-            if self.batchwise_prompt:
-                prompt_ids = np.random.choice(range(self.pool_size), self.top_k, replace=False)
-                prompt_ids = np.expand_dims(prompt_ids, 0)
-                prompt_ids = np.repeat(prompt_ids, batch_size, axis=0)
-            else:
-                prompt_ids = np.zeros((batch_size, self.top_k))
-                prompt_ids = np.apply_along_axis(lambda _: np.random.choice(range(self.pool_size), self.top_k, replace=False), 1, prompt_ids)
-            prompt_ids = torch.from_numpy(prompt_ids)
-            batched_prompt_raw = self.prompt[prompt_ids]
-
-            _, _, length, c = batched_prompt_raw.shape
-            batched_prompt = batched_prompt_raw.reshape(batch_size, self.top_k * length, c) 
-            out["prompt_idx"] = prompt_ids
         else:
             if self.prompt_init == "zero":
                 self.prompt = nn.Parameter(torch.zeros(self.length, self.embed_dim))

@@ -572,3 +572,1001 @@ Epoch 4 ended.
 	Loss_Stream/eval_phase/test_stream/Task000 = 0.4532
 	StreamForgetting/eval_phase/test_stream = 0.0742
 	Top1_Acc_Stream/eval_phase/test_stream/Task000 = 0.8166
+-- >> Start of training phase << --
+-- Starting training on experience 0 (Task 0) from train stream --
+Epoch 0 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.5746
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7950
+Epoch 1 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.2271
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.8734
+Epoch 2 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.0525
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.8928
+Epoch 3 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.0490
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.8964
+Epoch 4 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.0228
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.9036
+-- >> End of training phase << --
+-- >> Start of eval phase << --
+-- Starting eval on experience 0 (Task 0) from test stream --
+> Eval on experience 0 (Task 0) from test stream ended.
+	Loss_Exp/eval_phase/test_stream/Task000/Exp000 = -0.1703
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp000 = 0.9830
+-- >> End of eval phase << --
+	Loss_Stream/eval_phase/test_stream/Task000 = -0.1703
+	StreamForgetting/eval_phase/test_stream = 0.0000
+	Top1_Acc_Stream/eval_phase/test_stream/Task000 = 0.9830
+-- >> Start of training phase << --
+-- Starting training on experience 1 (Task 0) from train stream --
+Epoch 0 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 1.0247
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.6834
+Epoch 1 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.5441
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7838
+Epoch 2 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.3727
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.8126
+Epoch 3 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.3032
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.8280
+Epoch 4 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.2607
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.8422
+-- >> End of training phase << --
+-- >> Start of eval phase << --
+-- Starting eval on experience 0 (Task 0) from test stream --
+> Eval on experience 0 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp000 = 0.0400
+	Loss_Exp/eval_phase/test_stream/Task000/Exp000 = -0.0200
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp000 = 0.9430
+-- Starting eval on experience 1 (Task 0) from test stream --
+> Eval on experience 1 (Task 0) from test stream ended.
+	Loss_Exp/eval_phase/test_stream/Task000/Exp001 = 0.0571
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp001 = 0.9300
+-- >> End of eval phase << --
+	Loss_Stream/eval_phase/test_stream/Task000 = 0.0186
+	StreamForgetting/eval_phase/test_stream = 0.0400
+	Top1_Acc_Stream/eval_phase/test_stream/Task000 = 0.9365
+-- >> Start of training phase << --
+-- Starting training on experience 2 (Task 0) from train stream --
+Epoch 0 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 1.3669
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.6282
+Epoch 1 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.7354
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7422
+Epoch 2 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.5414
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7770
+Epoch 3 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.4448
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7946
+Epoch 4 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.3887
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.8118
+-- >> End of training phase << --
+-- >> Start of eval phase << --
+-- Starting eval on experience 0 (Task 0) from test stream --
+> Eval on experience 0 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp000 = 0.0380
+	Loss_Exp/eval_phase/test_stream/Task000/Exp000 = 0.0075
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp000 = 0.9450
+-- Starting eval on experience 1 (Task 0) from test stream --
+> Eval on experience 1 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp001 = 0.0090
+	Loss_Exp/eval_phase/test_stream/Task000/Exp001 = 0.0851
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp001 = 0.9210
+-- Starting eval on experience 2 (Task 0) from test stream --
+> Eval on experience 2 (Task 0) from test stream ended.
+	Loss_Exp/eval_phase/test_stream/Task000/Exp002 = 0.1266
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp002 = 0.8980
+-- >> End of eval phase << --
+	Loss_Stream/eval_phase/test_stream/Task000 = 0.0731
+	StreamForgetting/eval_phase/test_stream = 0.0235
+	Top1_Acc_Stream/eval_phase/test_stream/Task000 = 0.9213
+-- >> Start of training phase << --
+-- Starting training on experience 3 (Task 0) from train stream --
+Epoch 0 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 1.6345
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.5772
+Epoch 1 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.8012
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7368
+Epoch 2 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.6816
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7494
+Epoch 3 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.5519
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7802
+Epoch 4 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.4790
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7896
+-- >> End of training phase << --
+-- >> Start of eval phase << --
+-- Starting eval on experience 0 (Task 0) from test stream --
+> Eval on experience 0 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp000 = 0.0820
+	Loss_Exp/eval_phase/test_stream/Task000/Exp000 = 0.1851
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp000 = 0.9010
+-- Starting eval on experience 1 (Task 0) from test stream --
+> Eval on experience 1 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp001 = 0.0230
+	Loss_Exp/eval_phase/test_stream/Task000/Exp001 = 0.1593
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp001 = 0.9070
+-- Starting eval on experience 2 (Task 0) from test stream --
+> Eval on experience 2 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp002 = 0.0070
+	Loss_Exp/eval_phase/test_stream/Task000/Exp002 = 0.1762
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp002 = 0.8910
+-- Starting eval on experience 3 (Task 0) from test stream --
+> Eval on experience 3 (Task 0) from test stream ended.
+	Loss_Exp/eval_phase/test_stream/Task000/Exp003 = 0.3598
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp003 = 0.8500
+-- >> End of eval phase << --
+	Loss_Stream/eval_phase/test_stream/Task000 = 0.2201
+	StreamForgetting/eval_phase/test_stream = 0.0373
+	Top1_Acc_Stream/eval_phase/test_stream/Task000 = 0.8872
+-- >> Start of training phase << --
+-- Starting training on experience 4 (Task 0) from train stream --
+Epoch 0 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 1.8525
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.5448
+Epoch 1 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.9679
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.6990
+Epoch 2 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.7735
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7358
+Epoch 3 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.6271
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7582
+Epoch 4 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.5630
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7784
+-- >> End of training phase << --
+-- >> Start of eval phase << --
+-- Starting eval on experience 0 (Task 0) from test stream --
+> Eval on experience 0 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp000 = 0.0760
+	Loss_Exp/eval_phase/test_stream/Task000/Exp000 = 0.1858
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp000 = 0.9070
+-- Starting eval on experience 1 (Task 0) from test stream --
+> Eval on experience 1 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp001 = 0.0970
+	Loss_Exp/eval_phase/test_stream/Task000/Exp001 = 0.4844
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp001 = 0.8330
+-- Starting eval on experience 2 (Task 0) from test stream --
+> Eval on experience 2 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp002 = 0.0050
+	Loss_Exp/eval_phase/test_stream/Task000/Exp002 = 0.2682
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp002 = 0.8930
+-- Starting eval on experience 3 (Task 0) from test stream --
+> Eval on experience 3 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp003 = -0.0340
+	Loss_Exp/eval_phase/test_stream/Task000/Exp003 = 0.2560
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp003 = 0.8840
+-- Starting eval on experience 4 (Task 0) from test stream --
+> Eval on experience 4 (Task 0) from test stream ended.
+	Loss_Exp/eval_phase/test_stream/Task000/Exp004 = 0.2266
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp004 = 0.8760
+-- >> End of eval phase << --
+	Loss_Stream/eval_phase/test_stream/Task000 = 0.2842
+	StreamForgetting/eval_phase/test_stream = 0.0360
+	Top1_Acc_Stream/eval_phase/test_stream/Task000 = 0.8786
+-- >> Start of training phase << --
+-- Starting training on experience 5 (Task 0) from train stream --
+Epoch 0 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 1.9978
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.5132
+Epoch 1 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 1.0796
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.6742
+Epoch 2 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.8636
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7108
+Epoch 3 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.6855
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7490
+Epoch 4 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.6032
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7620
+-- >> End of training phase << --
+-- >> Start of eval phase << --
+-- Starting eval on experience 0 (Task 0) from test stream --
+> Eval on experience 0 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp000 = 0.0910
+	Loss_Exp/eval_phase/test_stream/Task000/Exp000 = 0.1829
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp000 = 0.8920
+-- Starting eval on experience 1 (Task 0) from test stream --
+> Eval on experience 1 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp001 = 0.0770
+	Loss_Exp/eval_phase/test_stream/Task000/Exp001 = 0.3260
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp001 = 0.8530
+-- Starting eval on experience 2 (Task 0) from test stream --
+> Eval on experience 2 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp002 = 0.0620
+	Loss_Exp/eval_phase/test_stream/Task000/Exp002 = 0.4914
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp002 = 0.8360
+-- Starting eval on experience 3 (Task 0) from test stream --
+> Eval on experience 3 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp003 = -0.0360
+	Loss_Exp/eval_phase/test_stream/Task000/Exp003 = 0.2115
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp003 = 0.8860
+-- Starting eval on experience 4 (Task 0) from test stream --
+> Eval on experience 4 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp004 = 0.0220
+	Loss_Exp/eval_phase/test_stream/Task000/Exp004 = 0.3315
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp004 = 0.8540
+-- Starting eval on experience 5 (Task 0) from test stream --
+> Eval on experience 5 (Task 0) from test stream ended.
+	Loss_Exp/eval_phase/test_stream/Task000/Exp005 = 0.4268
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp005 = 0.8300
+-- >> End of eval phase << --
+	Loss_Stream/eval_phase/test_stream/Task000 = 0.3284
+	StreamForgetting/eval_phase/test_stream = 0.0432
+	Top1_Acc_Stream/eval_phase/test_stream/Task000 = 0.8585
+-- >> Start of training phase << --
+-- Starting training on experience 6 (Task 0) from train stream --
+Epoch 0 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 2.2466
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.4876
+Epoch 1 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 1.1802
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.6592
+Epoch 2 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.8622
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7158
+Epoch 3 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.7506
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7330
+Epoch 4 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.6771
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7588
+-- >> End of training phase << --
+-- >> Start of eval phase << --
+-- Starting eval on experience 0 (Task 0) from test stream --
+> Eval on experience 0 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp000 = 0.1340
+	Loss_Exp/eval_phase/test_stream/Task000/Exp000 = 0.4358
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp000 = 0.8490
+-- Starting eval on experience 1 (Task 0) from test stream --
+> Eval on experience 1 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp001 = 0.1140
+	Loss_Exp/eval_phase/test_stream/Task000/Exp001 = 0.5833
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp001 = 0.8160
+-- Starting eval on experience 2 (Task 0) from test stream --
+> Eval on experience 2 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp002 = 0.0260
+	Loss_Exp/eval_phase/test_stream/Task000/Exp002 = 0.3045
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp002 = 0.8720
+-- Starting eval on experience 3 (Task 0) from test stream --
+> Eval on experience 3 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp003 = 0.1090
+	Loss_Exp/eval_phase/test_stream/Task000/Exp003 = 0.9306
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp003 = 0.7410
+-- Starting eval on experience 4 (Task 0) from test stream --
+> Eval on experience 4 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp004 = 0.0760
+	Loss_Exp/eval_phase/test_stream/Task000/Exp004 = 0.5113
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp004 = 0.8000
+-- Starting eval on experience 5 (Task 0) from test stream --
+> Eval on experience 5 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp005 = -0.0480
+	Loss_Exp/eval_phase/test_stream/Task000/Exp005 = 0.2562
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp005 = 0.8780
+-- Starting eval on experience 6 (Task 0) from test stream --
+> Eval on experience 6 (Task 0) from test stream ended.
+	Loss_Exp/eval_phase/test_stream/Task000/Exp006 = 0.1878
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp006 = 0.8940
+-- >> End of eval phase << --
+	Loss_Stream/eval_phase/test_stream/Task000 = 0.4585
+	StreamForgetting/eval_phase/test_stream = 0.0685
+	Top1_Acc_Stream/eval_phase/test_stream/Task000 = 0.8357
+-- >> Start of training phase << --
+-- Starting training on experience 7 (Task 0) from train stream --
+Epoch 0 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 2.3695
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.4766
+Epoch 1 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 1.2221
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.6490
+Epoch 2 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.9702
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7016
+Epoch 3 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.8608
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7146
+Epoch 4 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.6957
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7458
+-- >> End of training phase << --
+-- >> Start of eval phase << --
+-- Starting eval on experience 0 (Task 0) from test stream --
+> Eval on experience 0 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp000 = 0.1090
+	Loss_Exp/eval_phase/test_stream/Task000/Exp000 = 0.3150
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp000 = 0.8740
+-- Starting eval on experience 1 (Task 0) from test stream --
+> Eval on experience 1 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp001 = 0.1650
+	Loss_Exp/eval_phase/test_stream/Task000/Exp001 = 0.8657
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp001 = 0.7650
+-- Starting eval on experience 2 (Task 0) from test stream --
+> Eval on experience 2 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp002 = 0.0180
+	Loss_Exp/eval_phase/test_stream/Task000/Exp002 = 0.3231
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp002 = 0.8800
+-- Starting eval on experience 3 (Task 0) from test stream --
+> Eval on experience 3 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp003 = 0.0060
+	Loss_Exp/eval_phase/test_stream/Task000/Exp003 = 0.4273
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp003 = 0.8440
+-- Starting eval on experience 4 (Task 0) from test stream --
+> Eval on experience 4 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp004 = 0.0110
+	Loss_Exp/eval_phase/test_stream/Task000/Exp004 = 0.2509
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp004 = 0.8650
+-- Starting eval on experience 5 (Task 0) from test stream --
+> Eval on experience 5 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp005 = 0.0060
+	Loss_Exp/eval_phase/test_stream/Task000/Exp005 = 0.4445
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp005 = 0.8240
+-- Starting eval on experience 6 (Task 0) from test stream --
+> Eval on experience 6 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp006 = 0.0610
+	Loss_Exp/eval_phase/test_stream/Task000/Exp006 = 0.4487
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp006 = 0.8330
+-- Starting eval on experience 7 (Task 0) from test stream --
+> Eval on experience 7 (Task 0) from test stream ended.
+	Loss_Exp/eval_phase/test_stream/Task000/Exp007 = 0.2629
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp007 = 0.8710
+-- >> End of eval phase << --
+	Loss_Stream/eval_phase/test_stream/Task000 = 0.4173
+	StreamForgetting/eval_phase/test_stream = 0.0537
+	Top1_Acc_Stream/eval_phase/test_stream/Task000 = 0.8445
+-- >> Start of training phase << --
+-- Starting training on experience 8 (Task 0) from train stream --
+Epoch 0 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 2.5068
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.4524
+Epoch 1 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 1.3268
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.6368
+Epoch 2 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 1.0212
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.6942
+Epoch 3 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.8583
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7188
+Epoch 4 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.7496
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7402
+-- >> End of training phase << --
+-- >> Start of eval phase << --
+-- Starting eval on experience 0 (Task 0) from test stream --
+> Eval on experience 0 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp000 = 0.1050
+	Loss_Exp/eval_phase/test_stream/Task000/Exp000 = 0.3066
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp000 = 0.8780
+-- Starting eval on experience 1 (Task 0) from test stream --
+> Eval on experience 1 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp001 = 0.1200
+	Loss_Exp/eval_phase/test_stream/Task000/Exp001 = 0.5393
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp001 = 0.8100
+-- Starting eval on experience 2 (Task 0) from test stream --
+> Eval on experience 2 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp002 = 0.0780
+	Loss_Exp/eval_phase/test_stream/Task000/Exp002 = 0.5701
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp002 = 0.8200
+-- Starting eval on experience 3 (Task 0) from test stream --
+> Eval on experience 3 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp003 = -0.0010
+	Loss_Exp/eval_phase/test_stream/Task000/Exp003 = 0.4097
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp003 = 0.8510
+-- Starting eval on experience 4 (Task 0) from test stream --
+> Eval on experience 4 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp004 = 0.0320
+	Loss_Exp/eval_phase/test_stream/Task000/Exp004 = 0.3541
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp004 = 0.8440
+-- Starting eval on experience 5 (Task 0) from test stream --
+> Eval on experience 5 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp005 = 0.0300
+	Loss_Exp/eval_phase/test_stream/Task000/Exp005 = 0.6143
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp005 = 0.8000
+-- Starting eval on experience 6 (Task 0) from test stream --
+> Eval on experience 6 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp006 = 0.0170
+	Loss_Exp/eval_phase/test_stream/Task000/Exp006 = 0.2567
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp006 = 0.8770
+-- Starting eval on experience 7 (Task 0) from test stream --
+> Eval on experience 7 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp007 = 0.0470
+	Loss_Exp/eval_phase/test_stream/Task000/Exp007 = 0.4598
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp007 = 0.8240
+-- Starting eval on experience 8 (Task 0) from test stream --
+> Eval on experience 8 (Task 0) from test stream ended.
+	Loss_Exp/eval_phase/test_stream/Task000/Exp008 = 0.2919
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp008 = 0.8730
+-- >> End of eval phase << --
+	Loss_Stream/eval_phase/test_stream/Task000 = 0.4225
+	StreamForgetting/eval_phase/test_stream = 0.0535
+	Top1_Acc_Stream/eval_phase/test_stream/Task000 = 0.8419
+-- >> Start of training phase << --
+-- Starting training on experience 9 (Task 0) from train stream --
+Epoch 0 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 2.7047
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.4278
+Epoch 1 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 1.3813
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.6254
+Epoch 2 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 1.1195
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.6678
+Epoch 3 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.9465
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.6992
+Epoch 4 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.7933
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7354
+-- >> End of training phase << --
+-- >> Start of eval phase << --
+-- Starting eval on experience 0 (Task 0) from test stream --
+> Eval on experience 0 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp000 = 0.0740
+	Loss_Exp/eval_phase/test_stream/Task000/Exp000 = 0.1574
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp000 = 0.9090
+-- Starting eval on experience 1 (Task 0) from test stream --
+> Eval on experience 1 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp001 = 0.1530
+	Loss_Exp/eval_phase/test_stream/Task000/Exp001 = 0.7260
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp001 = 0.7770
+-- Starting eval on experience 2 (Task 0) from test stream --
+> Eval on experience 2 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp002 = 0.1360
+	Loss_Exp/eval_phase/test_stream/Task000/Exp002 = 0.8577
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp002 = 0.7620
+-- Starting eval on experience 3 (Task 0) from test stream --
+> Eval on experience 3 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp003 = 0.0720
+	Loss_Exp/eval_phase/test_stream/Task000/Exp003 = 0.7550
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp003 = 0.7780
+-- Starting eval on experience 4 (Task 0) from test stream --
+> Eval on experience 4 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp004 = 0.0550
+	Loss_Exp/eval_phase/test_stream/Task000/Exp004 = 0.4629
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp004 = 0.8210
+-- Starting eval on experience 5 (Task 0) from test stream --
+> Eval on experience 5 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp005 = 0.0910
+	Loss_Exp/eval_phase/test_stream/Task000/Exp005 = 0.7742
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp005 = 0.7390
+-- Starting eval on experience 6 (Task 0) from test stream --
+> Eval on experience 6 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp006 = 0.0420
+	Loss_Exp/eval_phase/test_stream/Task000/Exp006 = 0.3167
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp006 = 0.8520
+-- Starting eval on experience 7 (Task 0) from test stream --
+> Eval on experience 7 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp007 = 0.0570
+	Loss_Exp/eval_phase/test_stream/Task000/Exp007 = 0.4648
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp007 = 0.8140
+-- Starting eval on experience 8 (Task 0) from test stream --
+> Eval on experience 8 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp008 = 0.0020
+	Loss_Exp/eval_phase/test_stream/Task000/Exp008 = 0.2505
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp008 = 0.8710
+-- Starting eval on experience 9 (Task 0) from test stream --
+> Eval on experience 9 (Task 0) from test stream ended.
+	Loss_Exp/eval_phase/test_stream/Task000/Exp009 = 0.4402
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp009 = 0.8330
+-- >> End of eval phase << --
+	Loss_Stream/eval_phase/test_stream/Task000 = 0.5205
+	StreamForgetting/eval_phase/test_stream = 0.0758
+	Top1_Acc_Stream/eval_phase/test_stream/Task000 = 0.8156
+-- >> Start of training phase << --
+-- Starting training on experience 0 (Task 0) from train stream --
+Epoch 0 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.5156
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7980
+Epoch 1 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.0478
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.8740
+-- >> Start of training phase << --
+-- Starting training on experience 0 (Task 0) from train stream --
+Epoch 0 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.5741
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7870
+Epoch 1 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.2011
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.8672
+Epoch 2 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.0236
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.8952
+Epoch 3 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.0216
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.8916
+Epoch 4 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = -0.0074
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.8992
+-- >> End of training phase << --
+-- >> Start of eval phase << --
+-- Starting eval on experience 0 (Task 0) from test stream --
+> Eval on experience 0 (Task 0) from test stream ended.
+	Loss_Exp/eval_phase/test_stream/Task000/Exp000 = -0.1668
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp000 = 0.9870
+-- >> End of eval phase << --
+	Loss_Stream/eval_phase/test_stream/Task000 = -0.1668
+	StreamForgetting/eval_phase/test_stream = 0.0000
+	Top1_Acc_Stream/eval_phase/test_stream/Task000 = 0.9870
+-- >> Start of training phase << --
+-- Starting training on experience 1 (Task 0) from train stream --
+Epoch 0 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 1.0273
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.6810
+Epoch 1 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.5133
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7828
+Epoch 2 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.3397
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.8140
+Epoch 3 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.2735
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.8238
+Epoch 4 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.2311
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.8394
+-- >> End of training phase << --
+-- >> Start of eval phase << --
+-- Starting eval on experience 0 (Task 0) from test stream --
+> Eval on experience 0 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp000 = 0.0270
+	Loss_Exp/eval_phase/test_stream/Task000/Exp000 = -0.0736
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp000 = 0.9600
+-- Starting eval on experience 1 (Task 0) from test stream --
+> Eval on experience 1 (Task 0) from test stream ended.
+	Loss_Exp/eval_phase/test_stream/Task000/Exp001 = 0.0687
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp001 = 0.9340
+-- >> End of eval phase << --
+	Loss_Stream/eval_phase/test_stream/Task000 = -0.0024
+	StreamForgetting/eval_phase/test_stream = 0.0270
+	Top1_Acc_Stream/eval_phase/test_stream/Task000 = 0.9470
+-- >> Start of training phase << --
+-- Starting training on experience 2 (Task 0) from train stream --
+Epoch 0 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 1.3434
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.6256
+Epoch 1 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.7109
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7474
+Epoch 2 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.5127
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7762
+Epoch 3 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.4140
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7942
+Epoch 4 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.3626
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.8070
+-- >> End of training phase << --
+-- >> Start of eval phase << --
+-- Starting eval on experience 0 (Task 0) from test stream --
+> Eval on experience 0 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp000 = 0.0490
+	Loss_Exp/eval_phase/test_stream/Task000/Exp000 = 0.0067
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp000 = 0.9380
+-- Starting eval on experience 1 (Task 0) from test stream --
+> Eval on experience 1 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp001 = 0.0190
+	Loss_Exp/eval_phase/test_stream/Task000/Exp001 = 0.1063
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp001 = 0.9150
+-- Starting eval on experience 2 (Task 0) from test stream --
+> Eval on experience 2 (Task 0) from test stream ended.
+	Loss_Exp/eval_phase/test_stream/Task000/Exp002 = 0.1223
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp002 = 0.9010
+-- >> End of eval phase << --
+	Loss_Stream/eval_phase/test_stream/Task000 = 0.0785
+	StreamForgetting/eval_phase/test_stream = 0.0340
+	Top1_Acc_Stream/eval_phase/test_stream/Task000 = 0.9180
+-- >> Start of training phase << --
+-- Starting training on experience 3 (Task 0) from train stream --
+Epoch 0 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 1.6116
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.5720
+Epoch 1 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.7666
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7292
+Epoch 2 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.6437
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7464
+Epoch 3 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.5091
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7848
+Epoch 4 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.4502
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7856
+-- >> End of training phase << --
+-- >> Start of eval phase << --
+-- Starting eval on experience 0 (Task 0) from test stream --
+> Eval on experience 0 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp000 = 0.0760
+	Loss_Exp/eval_phase/test_stream/Task000/Exp000 = 0.1061
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp000 = 0.9110
+-- Starting eval on experience 1 (Task 0) from test stream --
+> Eval on experience 1 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp001 = 0.0350
+	Loss_Exp/eval_phase/test_stream/Task000/Exp001 = 0.1577
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp001 = 0.8990
+-- Starting eval on experience 2 (Task 0) from test stream --
+> Eval on experience 2 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp002 = 0.0050
+	Loss_Exp/eval_phase/test_stream/Task000/Exp002 = 0.1483
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp002 = 0.8960
+-- Starting eval on experience 3 (Task 0) from test stream --
+> Eval on experience 3 (Task 0) from test stream ended.
+	Loss_Exp/eval_phase/test_stream/Task000/Exp003 = 0.3012
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp003 = 0.8640
+-- >> End of eval phase << --
+	Loss_Stream/eval_phase/test_stream/Task000 = 0.1783
+	StreamForgetting/eval_phase/test_stream = 0.0387
+	Top1_Acc_Stream/eval_phase/test_stream/Task000 = 0.8925
+-- >> Start of training phase << --
+-- Starting training on experience 4 (Task 0) from train stream --
+Epoch 0 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 1.8211
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.5426
+Epoch 1 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.9220
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7006
+Epoch 2 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.7297
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7388
+Epoch 3 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.6004
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7560
+Epoch 4 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.5143
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7834
+-- >> End of training phase << --
+-- >> Start of eval phase << --
+-- Starting eval on experience 0 (Task 0) from test stream --
+> Eval on experience 0 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp000 = 0.0830
+	Loss_Exp/eval_phase/test_stream/Task000/Exp000 = 0.1876
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp000 = 0.9040
+-- Starting eval on experience 1 (Task 0) from test stream --
+> Eval on experience 1 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp001 = 0.1030
+	Loss_Exp/eval_phase/test_stream/Task000/Exp001 = 0.4638
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp001 = 0.8310
+-- Starting eval on experience 2 (Task 0) from test stream --
+> Eval on experience 2 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp002 = 0.0050
+	Loss_Exp/eval_phase/test_stream/Task000/Exp002 = 0.2102
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp002 = 0.8960
+-- Starting eval on experience 3 (Task 0) from test stream --
+> Eval on experience 3 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp003 = -0.0220
+	Loss_Exp/eval_phase/test_stream/Task000/Exp003 = 0.2410
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp003 = 0.8860
+-- Starting eval on experience 4 (Task 0) from test stream --
+> Eval on experience 4 (Task 0) from test stream ended.
+	Loss_Exp/eval_phase/test_stream/Task000/Exp004 = 0.2563
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp004 = 0.8750
+-- >> End of eval phase << --
+	Loss_Stream/eval_phase/test_stream/Task000 = 0.2718
+	StreamForgetting/eval_phase/test_stream = 0.0423
+	Top1_Acc_Stream/eval_phase/test_stream/Task000 = 0.8784
+-- >> Start of training phase << --
+-- Starting training on experience 5 (Task 0) from train stream --
+Epoch 0 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 1.9608
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.5160
+Epoch 1 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 1.0355
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.6794
+Epoch 2 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.8254
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7116
+Epoch 3 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.6385
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7510
+Epoch 4 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.5610
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7638
+-- >> End of training phase << --
+-- >> Start of eval phase << --
+-- Starting eval on experience 0 (Task 0) from test stream --
+> Eval on experience 0 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp000 = 0.1030
+	Loss_Exp/eval_phase/test_stream/Task000/Exp000 = 0.2220
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp000 = 0.8840
+-- Starting eval on experience 1 (Task 0) from test stream --
+> Eval on experience 1 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp001 = 0.0810
+	Loss_Exp/eval_phase/test_stream/Task000/Exp001 = 0.3138
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp001 = 0.8530
+-- Starting eval on experience 2 (Task 0) from test stream --
+> Eval on experience 2 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp002 = 0.0790
+	Loss_Exp/eval_phase/test_stream/Task000/Exp002 = 0.4980
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp002 = 0.8220
+-- Starting eval on experience 3 (Task 0) from test stream --
+> Eval on experience 3 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp003 = -0.0240
+	Loss_Exp/eval_phase/test_stream/Task000/Exp003 = 0.1921
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp003 = 0.8880
+-- Starting eval on experience 4 (Task 0) from test stream --
+> Eval on experience 4 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp004 = 0.0160
+	Loss_Exp/eval_phase/test_stream/Task000/Exp004 = 0.2703
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp004 = 0.8590
+-- Starting eval on experience 5 (Task 0) from test stream --
+> Eval on experience 5 (Task 0) from test stream ended.
+	Loss_Exp/eval_phase/test_stream/Task000/Exp005 = 0.3549
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp005 = 0.8430
+-- >> End of eval phase << --
+	Loss_Stream/eval_phase/test_stream/Task000 = 0.3085
+	StreamForgetting/eval_phase/test_stream = 0.0510
+	Top1_Acc_Stream/eval_phase/test_stream/Task000 = 0.8582
+-- >> Start of training phase << --
+-- Starting training on experience 6 (Task 0) from train stream --
+Epoch 0 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 2.2214
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.4852
+Epoch 1 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 1.1484
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.6598
+Epoch 2 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.8287
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7152
+Epoch 3 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.7136
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7332
+Epoch 4 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.6487
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7560
+-- >> End of training phase << --
+-- >> Start of eval phase << --
+-- Starting eval on experience 0 (Task 0) from test stream --
+> Eval on experience 0 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp000 = 0.1350
+	Loss_Exp/eval_phase/test_stream/Task000/Exp000 = 0.4012
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp000 = 0.8520
+-- Starting eval on experience 1 (Task 0) from test stream --
+> Eval on experience 1 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp001 = 0.1130
+	Loss_Exp/eval_phase/test_stream/Task000/Exp001 = 0.4759
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp001 = 0.8210
+-- Starting eval on experience 2 (Task 0) from test stream --
+> Eval on experience 2 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp002 = 0.0350
+	Loss_Exp/eval_phase/test_stream/Task000/Exp002 = 0.2903
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp002 = 0.8660
+-- Starting eval on experience 3 (Task 0) from test stream --
+> Eval on experience 3 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp003 = 0.1230
+	Loss_Exp/eval_phase/test_stream/Task000/Exp003 = 0.8218
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp003 = 0.7410
+-- Starting eval on experience 4 (Task 0) from test stream --
+> Eval on experience 4 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp004 = 0.0820
+	Loss_Exp/eval_phase/test_stream/Task000/Exp004 = 0.4652
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp004 = 0.7930
+-- Starting eval on experience 5 (Task 0) from test stream --
+> Eval on experience 5 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp005 = -0.0320
+	Loss_Exp/eval_phase/test_stream/Task000/Exp005 = 0.2292
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp005 = 0.8750
+-- Starting eval on experience 6 (Task 0) from test stream --
+> Eval on experience 6 (Task 0) from test stream ended.
+	Loss_Exp/eval_phase/test_stream/Task000/Exp006 = 0.1661
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp006 = 0.9000
+-- >> End of eval phase << --
+	Loss_Stream/eval_phase/test_stream/Task000 = 0.4071
+	StreamForgetting/eval_phase/test_stream = 0.0760
+	Top1_Acc_Stream/eval_phase/test_stream/Task000 = 0.8354
+-- >> Start of training phase << --
+-- Starting training on experience 7 (Task 0) from train stream --
+Epoch 0 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 2.3347
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.4756
+Epoch 1 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 1.1712
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.6550
+Epoch 2 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.9390
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7022
+Epoch 3 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.8246
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7150
+Epoch 4 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.6535
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7490
+-- >> End of training phase << --
+-- >> Start of eval phase << --
+-- Starting eval on experience 0 (Task 0) from test stream --
+> Eval on experience 0 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp000 = 0.1080
+	Loss_Exp/eval_phase/test_stream/Task000/Exp000 = 0.2848
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp000 = 0.8790
+-- Starting eval on experience 1 (Task 0) from test stream --
+> Eval on experience 1 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp001 = 0.1640
+	Loss_Exp/eval_phase/test_stream/Task000/Exp001 = 0.7521
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp001 = 0.7700
+-- Starting eval on experience 2 (Task 0) from test stream --
+> Eval on experience 2 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp002 = 0.0330
+	Loss_Exp/eval_phase/test_stream/Task000/Exp002 = 0.3146
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp002 = 0.8680
+-- Starting eval on experience 3 (Task 0) from test stream --
+> Eval on experience 3 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp003 = 0.0390
+	Loss_Exp/eval_phase/test_stream/Task000/Exp003 = 0.4613
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp003 = 0.8250
+-- Starting eval on experience 4 (Task 0) from test stream --
+> Eval on experience 4 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp004 = 0.0060
+	Loss_Exp/eval_phase/test_stream/Task000/Exp004 = 0.2222
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp004 = 0.8690
+-- Starting eval on experience 5 (Task 0) from test stream --
+> Eval on experience 5 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp005 = 0.0120
+	Loss_Exp/eval_phase/test_stream/Task000/Exp005 = 0.4134
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp005 = 0.8310
+-- Starting eval on experience 6 (Task 0) from test stream --
+> Eval on experience 6 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp006 = 0.0640
+	Loss_Exp/eval_phase/test_stream/Task000/Exp006 = 0.3985
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp006 = 0.8360
+-- Starting eval on experience 7 (Task 0) from test stream --
+> Eval on experience 7 (Task 0) from test stream ended.
+	Loss_Exp/eval_phase/test_stream/Task000/Exp007 = 0.2555
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp007 = 0.8690
+-- >> End of eval phase << --
+	Loss_Stream/eval_phase/test_stream/Task000 = 0.3878
+	StreamForgetting/eval_phase/test_stream = 0.0609
+	Top1_Acc_Stream/eval_phase/test_stream/Task000 = 0.8434
+-- >> Start of training phase << --
+-- Starting training on experience 8 (Task 0) from train stream --
+Epoch 0 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 2.4622
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.4484
+Epoch 1 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 1.2750
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.6426
+Epoch 2 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.9901
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.6936
+Epoch 3 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.8150
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7190
+Epoch 4 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.7081
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7426
+-- >> End of training phase << --
+-- >> Start of eval phase << --
+-- Starting eval on experience 0 (Task 0) from test stream --
+> Eval on experience 0 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp000 = 0.1050
+	Loss_Exp/eval_phase/test_stream/Task000/Exp000 = 0.2637
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp000 = 0.8820
+-- Starting eval on experience 1 (Task 0) from test stream --
+> Eval on experience 1 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp001 = 0.1390
+	Loss_Exp/eval_phase/test_stream/Task000/Exp001 = 0.5750
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp001 = 0.7950
+-- Starting eval on experience 2 (Task 0) from test stream --
+> Eval on experience 2 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp002 = 0.0740
+	Loss_Exp/eval_phase/test_stream/Task000/Exp002 = 0.4771
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp002 = 0.8270
+-- Starting eval on experience 3 (Task 0) from test stream --
+> Eval on experience 3 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp003 = -0.0040
+	Loss_Exp/eval_phase/test_stream/Task000/Exp003 = 0.3196
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp003 = 0.8680
+-- Starting eval on experience 4 (Task 0) from test stream --
+> Eval on experience 4 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp004 = 0.0270
+	Loss_Exp/eval_phase/test_stream/Task000/Exp004 = 0.3271
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp004 = 0.8480
+-- Starting eval on experience 5 (Task 0) from test stream --
+> Eval on experience 5 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp005 = 0.0490
+	Loss_Exp/eval_phase/test_stream/Task000/Exp005 = 0.6080
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp005 = 0.7940
+-- Starting eval on experience 6 (Task 0) from test stream --
+> Eval on experience 6 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp006 = 0.0410
+	Loss_Exp/eval_phase/test_stream/Task000/Exp006 = 0.2543
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp006 = 0.8590
+-- Starting eval on experience 7 (Task 0) from test stream --
+> Eval on experience 7 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp007 = 0.0340
+	Loss_Exp/eval_phase/test_stream/Task000/Exp007 = 0.3590
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp007 = 0.8350
+-- Starting eval on experience 8 (Task 0) from test stream --
+> Eval on experience 8 (Task 0) from test stream ended.
+	Loss_Exp/eval_phase/test_stream/Task000/Exp008 = 0.2747
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp008 = 0.8700
+-- >> End of eval phase << --
+	Loss_Stream/eval_phase/test_stream/Task000 = 0.3843
+	StreamForgetting/eval_phase/test_stream = 0.0581
+	Top1_Acc_Stream/eval_phase/test_stream/Task000 = 0.8420
+-- >> Start of training phase << --
+-- Starting training on experience 9 (Task 0) from train stream --
+Epoch 0 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 2.6633
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.4252
+Epoch 1 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 1.3200
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.6312
+Epoch 2 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 1.0803
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.6686
+Epoch 3 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.8971
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7010
+Epoch 4 ended.
+	Loss_Epoch/train_phase/train_stream/Task000 = 0.7330
+	Top1_Acc_Epoch/train_phase/train_stream/Task000 = 0.7396
+-- >> End of training phase << --
+-- >> Start of eval phase << --
+-- Starting eval on experience 0 (Task 0) from test stream --
+> Eval on experience 0 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp000 = 0.0880
+	Loss_Exp/eval_phase/test_stream/Task000/Exp000 = 0.1552
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp000 = 0.8990
+-- Starting eval on experience 1 (Task 0) from test stream --
+> Eval on experience 1 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp001 = 0.1560
+	Loss_Exp/eval_phase/test_stream/Task000/Exp001 = 0.7075
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp001 = 0.7780
+-- Starting eval on experience 2 (Task 0) from test stream --
+> Eval on experience 2 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp002 = 0.1360
+	Loss_Exp/eval_phase/test_stream/Task000/Exp002 = 0.7969
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp002 = 0.7650
+-- Starting eval on experience 3 (Task 0) from test stream --
+> Eval on experience 3 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp003 = 0.0830
+	Loss_Exp/eval_phase/test_stream/Task000/Exp003 = 0.6829
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp003 = 0.7810
+-- Starting eval on experience 4 (Task 0) from test stream --
+> Eval on experience 4 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp004 = 0.0570
+	Loss_Exp/eval_phase/test_stream/Task000/Exp004 = 0.4610
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp004 = 0.8180
+-- Starting eval on experience 5 (Task 0) from test stream --
+> Eval on experience 5 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp005 = 0.1530
+	Loss_Exp/eval_phase/test_stream/Task000/Exp005 = 1.0073
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp005 = 0.6900
+-- Starting eval on experience 6 (Task 0) from test stream --
+> Eval on experience 6 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp006 = 0.0550
+	Loss_Exp/eval_phase/test_stream/Task000/Exp006 = 0.3282
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp006 = 0.8450
+-- Starting eval on experience 7 (Task 0) from test stream --
+> Eval on experience 7 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp007 = 0.0380
+	Loss_Exp/eval_phase/test_stream/Task000/Exp007 = 0.4330
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp007 = 0.8310
+-- Starting eval on experience 8 (Task 0) from test stream --
+> Eval on experience 8 (Task 0) from test stream ended.
+	ExperienceForgetting/eval_phase/test_stream/Task000/Exp008 = -0.0070
+	Loss_Exp/eval_phase/test_stream/Task000/Exp008 = 0.2081
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp008 = 0.8770
+-- Starting eval on experience 9 (Task 0) from test stream --
+> Eval on experience 9 (Task 0) from test stream ended.
+	Loss_Exp/eval_phase/test_stream/Task000/Exp009 = 0.4099
+	Top1_Acc_Exp/eval_phase/test_stream/Task000/Exp009 = 0.8390
+-- >> End of eval phase << --
+	Loss_Stream/eval_phase/test_stream/Task000 = 0.5190
+	StreamForgetting/eval_phase/test_stream = 0.0843
+	Top1_Acc_Stream/eval_phase/test_stream/Task000 = 0.8123

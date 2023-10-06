@@ -6,7 +6,7 @@ from avalanche.training.supervised import GDumb
 from torch.nn import CrossEntropyLoss
 from avalanche.training.plugins import SupervisedPlugin, EvaluationPlugin, GDumbPlugin
 from avalanche.training.plugins.evaluation import EvaluationPlugin, default_evaluator
-from avalanche.models.vit import create_model
+from l2p import create_model
 import numpy as np
 from functools import reduce
 
@@ -35,7 +35,7 @@ class ViTGDumb(GDumb):
         ] = default_evaluator,
         eval_every=-1,
         prompt_pool: bool = True,
-        prompt_selection: bool = False,
+        prompt_selection: bool = True,
         pool_size: int = 20,
         prompt_length: int = 5,
         top_k: int = 5,
@@ -61,6 +61,7 @@ class ViTGDumb(GDumb):
         self.num_classes = num_classes
         self.lr = lr
         self.sim_coefficient = sim_coefficient
+        self.prompt_selection = prompt_selection
         model = create_model(
             model_name=model_name,
             prompt_pool=prompt_pool,
@@ -77,6 +78,7 @@ class ViTGDumb(GDumb):
             batchwise_prompt=batchwise_prompt,
             head_type=head_type,
             use_prompt_mask=use_prompt_mask,
+            prompt_selection=prompt_selection
         )
 
         for n, p in model.named_parameters():
@@ -86,6 +88,8 @@ class ViTGDumb(GDumb):
                 p.requires_grad = False
 
         model.head = torch.nn.Linear(model.head.in_features, num_classes).to(device)
+
+        model = model.to(device)
 
         optimizer = torch.optim.Adam(
             model.parameters(),
@@ -139,9 +143,10 @@ class ViTGDumb(GDumb):
         )
 
     def forward(self):
+
         assert self.experience is not None
 
-        if self.use_cls_features and not self.prompt_selection:
+        if self.use_cls_features and self.prompt_selection:
             with torch.no_grad():
                 cls_features = self.original_vit(self.mb_x)["pre_logits"]
         else:
@@ -178,8 +183,6 @@ class ViTGDumb(GDumb):
 
     def criterion(self):
         loss = self._criterion(self.mb_output, self.mb_y)
-        loss = loss - self.sim_coefficient * self.res["reduce_sim"]
+        if self.prompt_selection:
+            loss = loss - self.sim_coefficient * self.res["reduce_sim"]
         return loss
-
-    def _after_backward(self, **kwargs):
-        torch.nn.utils.clip_grad_norm_(self.model.parameters(), 1.0)

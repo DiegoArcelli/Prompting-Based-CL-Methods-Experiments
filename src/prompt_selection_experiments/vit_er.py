@@ -6,7 +6,7 @@ from avalanche.training.supervised import ER_ACE
 from torch.nn import CrossEntropyLoss
 from avalanche.training.plugins import SupervisedPlugin, EvaluationPlugin
 from avalanche.training.plugins.evaluation import EvaluationPlugin, default_evaluator
-from avalanche.models.vit import create_model
+from l2p import create_model
 from avalanche.models.utils import avalanche_forward
 import numpy as np
 
@@ -79,6 +79,7 @@ class ViTER(ER_ACE):
             batchwise_prompt=batchwise_prompt,
             head_type=head_type,
             use_prompt_mask=use_prompt_mask,
+            prompt_selection=prompt_selection
         )
 
         for n, p in model.named_parameters():
@@ -142,18 +143,16 @@ class ViTER(ER_ACE):
             lr=self.lr,
         )
 
-    def _after_backward(self, **kwargs):
-        torch.nn.utils.clip_grad_norm_(self.model.parameters(), 1.0)
-
     def criterion(self):
         loss = self._criterion(self.mb_output, self.mb_y)
-        loss = loss - self.sim_coefficient * self.res["reduce_sim"]
+        if self.prompt_selection:
+            loss = loss - self.sim_coefficient * self.res["reduce_sim"]
         return loss
 
     def forward(self):
         assert self.experience is not None
 
-        if self.use_cls_features and not self.prompt_selection:
+        if self.use_cls_features and self.prompt_selection:
             with torch.no_grad():
                 cls_features = self.original_vit(self.mb_x)["pre_logits"]
         else:

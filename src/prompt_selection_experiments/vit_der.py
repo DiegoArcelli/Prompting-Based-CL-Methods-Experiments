@@ -7,7 +7,7 @@ from avalanche.training.templates import SupervisedTemplate
 from torch.nn import CrossEntropyLoss
 from avalanche.training.plugins import SupervisedPlugin, EvaluationPlugin
 from avalanche.training.plugins.evaluation import EvaluationPlugin, default_evaluator
-from avalanche.models.vit import create_model
+from l2p import create_model
 import numpy as np
 from torch.nn import Linear, Sequential, ReLU
 from avalanche.benchmarks.utils.data import AvalancheDataset
@@ -15,6 +15,7 @@ from avalanche.benchmarks.utils.data_attribute import TensorDataAttribute
 from avalanche.benchmarks.utils import make_avalanche_dataset
 from avalanche.training.storage_policy import ReservoirSamplingBuffer
 from collections import defaultdict
+import torch.nn.functional as F
 from tqdm import tqdm
 
 
@@ -49,7 +50,7 @@ class ViTDER(DER):
         ] = default_evaluator,
         eval_every=-1,
         peval_mode="epoch",
-               prompt_pool: bool = True,
+        prompt_pool: bool = True,
         prompt_selection: bool = False,
         pool_size: int = 20,
         prompt_length: int = 5,
@@ -92,6 +93,7 @@ class ViTDER(DER):
             batchwise_prompt=batchwise_prompt,
             head_type=head_type,
             use_prompt_mask=use_prompt_mask,
+            prompt_selection=prompt_selection,
             **base_kwargs
         )
 
@@ -166,7 +168,73 @@ class ViTDER(DER):
             lr=self.lr,
         )
 
+
+
+    def training_epoch(self, **kwargs):
+        """Training epoch.
+
+        :param kwargs:
+        :return:
+        """
+        for self.mbatch in self.dataloader:
+            if self._stop_training:
+                break
+
+            self._unpack_minibatch()
+            self._before_training_iteration(**kwargs)
+
+            self.optimizer.zero_grad()
+            self.loss = self._make_empty_loss()
+
+            # Forward
+            self._before_forward(**kwargs)
+            self.mb_output = self.forward()
+            self._after_forward(**kwargs)
+
+
+            if self.use_mask and self.is_training:
+                exp_classes = self.experience.classes_in_this_experience
+                buff_classes = list(self.storage_policy.seen_classes)
+                mask = list(set(exp_classes + buff_classes))
+                not_mask = np.setdiff1d(np.arange(self.num_classes), mask)
+                not_mask = torch.tensor(not_mask, dtype=torch.int64).to(self.device)
+                masked_output = self.mb_output.index_fill(dim=1, index=not_mask, value=float("-inf"))
+
+
+            if self.replay_loader is not None:
+                # DER Loss computation
+                self.loss += F.cross_entropy(
+                    masked_output[self.batch_size_mem :],
+                    self.mb_y[self.batch_size_mem :],
+                )
+
+                self.loss += self.alpha * F.mse_loss(
+                    self.mb_output[: self.batch_size_mem],
+                    self.batch_logits,
+                )
+
+                self.loss += self.beta * F.cross_entropy(
+                    masked_output[: self.batch_size_mem],
+                    self.mb_y[: self.batch_size_mem],
+                )
+
+            else:
+                self.loss += self.criterion()
+
+            self._before_backward(**kwargs)
+            self.backward()
+            self._after_backward(**kwargs)
+
+            # Optimization step
+            self._before_update(**kwargs)
+            self.optimizer_step()
+            self._after_update(**kwargs)
+
+            self._after_training_iteration(**kwargs)
+
+
     def forward(self):
+
         assert self.experience is not None
 
         if self.use_cls_features and not self.prompt_selection:
@@ -192,21 +260,16 @@ class ViTDER(DER):
 
         logits = self.res["logits"]
 
-        if self.use_mask and self.is_training:
-            mask = list(self.storage_policy.seen_classes)
-            not_mask = np.setdiff1d(np.arange(self.num_classes), mask)
-            not_mask = torch.tensor(not_mask, dtype=torch.int64).to(self.device)
-            logits = logits.index_fill(dim=1, index=not_mask, value=float("-inf"))
-
         return logits   
     
 
     def _before_backward(self, **kwargs):
-        self.loss -= self.sim_coefficient * self.res["reduce_sim"]
+        if self.prompt_selection:
+            self.loss -= self.sim_coefficient * self.res["reduce_sim"]
         return super()._before_backward(**kwargs)
 
-    def _after_backward(self, **kwargs):
-        torch.nn.utils.clip_grad_norm_(self.model.parameters(), 1.0)
+    def criterion(self):
+        return self._criterion(self.mb_output, self.mb_y)
     
     
 class ClassBalancedBufferWithLogitsViT(ClassBalancedBufferWithLogits):

@@ -9,9 +9,13 @@ from avalanche.logging import InteractiveLogger, TextLogger
 from avalanche.evaluation.metrics import accuracy_metrics, loss_metrics, forgetting_metrics
 from avalanche.benchmarks.generators import benchmark_with_validation_stream
 import argparse
+from avalanche.models import Prompt
 from utils import get_strategy, get_strategy_arguments
 import random
 import numpy as np
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+#torch.set_default_device(device)
 
 parser = argparse.ArgumentParser(prog='Train L2P', description='Train L2P based continual learning strategy')
 parser.add_argument('--selection', action='store_true')
@@ -24,14 +28,13 @@ args = get_strategy_arguments(parser, args.strategy_name, args.selection)
 args = parser.parse_args()
 
 
-seed = 42
-torch.manual_seed(seed)
-np.random.seed(seed)
-random.seed(seed)
+torch.manual_seed(args.seed)
+np.random.seed(args.seed)
+random.seed(args.seed)
 torch.cuda.set_per_process_memory_fraction(0.5)
 
 
-non_strategy_args = ["selection", "strategy_name", "num_experiences", "use_early_stop", "log_name", "checkpoint_name"]
+non_strategy_args = ["selection", "strategy_name", "num_experiences", "use_early_stop", "log_name", "checkpoint_name", "seed"]
 strategy_args = {arg: value for (arg, value) in args._get_kwargs() if arg not in non_strategy_args}
 
 use_early_stop = False
@@ -89,15 +92,15 @@ eval_transform = transforms.Compose([
     transforms.ToTensor()
 ])
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 strategy_args["device"] = device
-
 strategy_args["lr"] = lr*batch_size/256.0
+strategy_args["prompt_selection"] = args.selection
+strategy_args["top_k"] = args.top_k if args.selection else args.pool_size
 
 
 benchmark = SplitCIFAR100(
     n_experiences=args.num_experiences,
-    seed=seed,
+    seed=args.seed,
     fixed_class_order=[c for c in range(num_classes)],
     return_task_id=args.use_prompt_mask,
     train_transform=train_transform,
@@ -109,7 +112,7 @@ benchmark = SplitCIFAR100(
 if args.use_early_stop:
     benchmark = benchmark_with_validation_stream(benchmark, 0.05, shuffle=True)
 
-print("Arguments:")
+print("\nArguments:")
 for arg, val in strategy_args.items():
     print(f"{arg} = {val}")
 print("\n")

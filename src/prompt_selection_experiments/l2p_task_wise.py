@@ -60,6 +60,7 @@ class TaskWiseLearningToPrompt(SupervisedTemplate):
         use_cls_features: bool = True,
         use_mask: bool = True,
         use_vit: bool = True,
+        num_tasks: int = 10,
         **kwargs,
     ):
 
@@ -85,6 +86,7 @@ class TaskWiseLearningToPrompt(SupervisedTemplate):
             batchwise_prompt=batchwise_prompt,
             head_type=head_type,
             use_prompt_mask=use_prompt_mask,
+            num_tasks=num_tasks
         )
 
         for n, p in model.named_parameters():
@@ -172,14 +174,10 @@ class TaskWiseLearningToPrompt(SupervisedTemplate):
             logits = logits.index_fill(dim=1, index=not_mask, value=float("-inf"))
 
         return logits
-    
 
     def criterion(self):
         loss = self._criterion(self.mb_output, self.mb_y)
         return loss
-
-    def _after_backward(self, **kwargs):
-        torch.nn.utils.clip_grad_norm_(self.model.parameters(), 1.0)
 
 
 class ViTWithTaskWisePrompt(ViTWithPrompt):
@@ -189,7 +187,7 @@ class ViTWithTaskWisePrompt(ViTWithPrompt):
         img_size=224,
         patch_size=16,
         in_chans=3,
-        num_classes=1000,
+        num_classes=100,
         global_pool="token",
         embed_dim=768,
         depth=12,
@@ -220,6 +218,7 @@ class ViTWithTaskWisePrompt(ViTWithPrompt):
         prompt_key_init="uniform",
         head_type="token",
         use_prompt_mask=False,
+        num_tasks=10
     ):
         super().__init__(
             img_size=img_size,
@@ -265,18 +264,25 @@ class ViTWithTaskWisePrompt(ViTWithPrompt):
         self.use_prompt_mask = use_prompt_mask
 
         if prompt_length is not None and pool_size is not None and prompt_pool:
-            self.prompt = TaskPrompt(
-                length=prompt_length,
-                embed_dim=embed_dim,
-                embedding_key=embedding_key,
-                prompt_init=prompt_init,
-                prompt_pool=prompt_pool,
-                prompt_key=prompt_key,
-                pool_size=pool_size,
-                top_k=top_k,
-                batchwise_prompt=batchwise_prompt,
-                prompt_key_init=prompt_key_init,
-            )
+            self.prompts = torch.nn.ModuleList([
+                TaskPrompt(
+                    length=prompt_length,
+                    embed_dim=embed_dim,
+                    embedding_key="mean",
+                    prompt_init=prompt_init,
+                    prompt_pool=prompt_pool,
+                    prompt_key=False,
+                    pool_size=pool_size,
+                    top_k=pool_size,
+                    batchwise_prompt=batchwise_prompt,
+                    prompt_key_init=prompt_key_init,
+                ) for _ in range(num_tasks)
+            ])
+
+            self.prompts[0].requires_grad = True
+            for i in range(1, len(self.prompts)):
+                self.prompts[i].requires_grad = False
+            
 
         if num_classes > 0:
             self.head = nn.Linear(self.embed_dim, num_classes)
@@ -295,21 +301,14 @@ class ViTWithTaskWisePrompt(ViTWithPrompt):
         x = x.float()
         x = self.patch_embed(x)
 
-        if hasattr(self, "prompt"):
-            if self.use_prompt_mask:
-                start = task_id * self.prompt.top_k
-                end = (task_id + 1) * self.prompt.top_k
-                single_prompt_mask = torch.arange(start, end).to(x.device)
-                prompt_mask = single_prompt_mask.unsqueeze(0).expand(x.shape[0], -1)
-                if end > self.prompt.pool_size:
-                    prompt_mask = None
-            else:
-                prompt_mask = None
-            res = self.prompt(x, prompt_mask=prompt_mask)
-            self.total_prompt_len = res["total_prompt_len"]
-            x = res["prompted_embedding"]
-        else:
-            res = dict()
+        if task_id > 0 and self.prompts[task_id-1].requires_grad == True:
+            self.prompts[task_id-1].requires_grad = False
+            self.prompts[task_id].requires_grad = True
+
+        res = self.prompts[task_id](x)
+        self.total_prompt_len = res["total_prompt_len"]
+        x = res["prompted_embedding"]
+
         if self.cls_token is not None:
             x = torch.cat((self.cls_token.expand(x.shape[0], -1, -1), x), dim=1)
 
@@ -324,6 +323,7 @@ class ViTWithTaskWisePrompt(ViTWithPrompt):
         res["x"] = x
 
         return res
+    
 
     def forward_head(self, res, pre_logits: bool = False):
         x = res["x"]
@@ -400,7 +400,7 @@ class TaskPrompt(Prompt):
         out = dict()
         if self.prompt_pool:
 
-            idx = prompt_mask  # B, top_k
+            idx = torch.tensor([[p for p in range(self.pool_size)] for _ in range(x_embed.shape[0])])  # B, top_k
             batched_prompt_raw = self.prompt[idx]  # B, top_k, length, C
             batch_size, top_k, length, c = batched_prompt_raw.shape
             batched_prompt = batched_prompt_raw.reshape(
