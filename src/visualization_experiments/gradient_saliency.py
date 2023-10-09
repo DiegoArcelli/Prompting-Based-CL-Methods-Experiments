@@ -13,7 +13,7 @@ from tqdm import tqdm
 import argparse
 
 parser = argparse.ArgumentParser(prog='Visualize L2P', description='Visualize L2P keys and prompts')
-parser.add_argument('--model', default="avalanche", type=str, choices=["avalanche", "repo", "random"])
+parser.add_argument('--model', default="avalanche", type=str, choices=["avalanche", "repo", "random", "repo_100"])
 args = parser.parse_args()
 
 
@@ -32,12 +32,12 @@ transform = transforms.Compose([
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 n_classes = 100
-n_images = 2
-
-# model_path = "./../../../checkpoints/l2p_cifar100_l2p_selection.pt"
+n_images = 10
 
 if args.model == "repo":
     model_path = "./../../checkpoints/l2p_cifar100_repo.pt"
+if args.model == "repo_100":
+    model_path = "./../../checkpoints/l2p_cifar100_100_repo.pt"
 elif args.model == "avalanche":
     model_path = "./../../checkpoints/l2p_cifar100_l2p_selection.pt"
 elif args.model == "random":

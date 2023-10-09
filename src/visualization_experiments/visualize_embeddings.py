@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import argparse
 
 parser = argparse.ArgumentParser(prog='Visualize L2P', description='Visualize L2P keys and prompts')
-parser.add_argument('--model', default="avalanche", type=str, choices=["avalanche", "repo", "random"])
+parser.add_argument('--model', default="avalanche", type=str, choices=["avalanche", "repo", "random", "repo_100"])
 parser.add_argument('--reduction_alg', default="tsne", type=str)
 
 args = parser.parse_args()
@@ -39,6 +39,8 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 if args.model == "repo":
     model_name = "l2p_cifar100_repo.pt"
+elif args.model == "repo_100":
+    model_name = "l2p_cifar100_100_repo.pt"
 elif args.model == "avalanche":
     model_name = "l2p_cifar100_l2p_selection.pt"
 elif args.model == "random":
